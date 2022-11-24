@@ -1,0 +1,67 @@
+[
+    {
+        "id": "6368b7dca02bf10130aed241",
+        "username": "Jaswant",
+        "email": "jaswant123@gmail.com",
+        "password": "$2a$08$ApilU0mMYAwUBFYRI1bSEOgH9Ux82SLEu35ssVKwNS90qYGRlWHmK",
+        "roles": [
+            "ROLE_ADMIN"
+        ]
+    },
+    {
+        "id": "$2a$08$gr04kxCIc979.MO7cXbCseNWBG0FypsdFwchzrj5eEqFVfe.iLQse",
+        "username": "arsh",
+        "email": "arsh123@gmail.com",
+        "password": "$2a$08$ApilU0mMYAwUBFYRI1bSEOgH9Ux82SLEu35ssVKwNS90qYGRlWHmK",
+        "roles": [
+            "ROLE_USER"
+        ]
+    },
+    {
+        "id": "$2a$08$WSjU44zngQ8TRDHui.8XgOB7TZPJJ.I2DORTeatGpa8lt6vs43ppW",
+        "username": "ranvijay",
+        "email": "ranvijay@gmail.com",
+        "password": "$2a$08$UYNje0YBp9CrLjTj/BJicuKx.gDPRB/dJHfROyQc37zAui6VcYmHG",
+        "roles": [
+            "ROLE_MODERATOR"
+        ]
+    },
+    {
+        "id": "$2a$08$DoSrTyXQdIP1WLJcal/iPeQSLi6mC0CfjreEyWarecpgRwRfodXYe",
+        "username": "suraj",
+        "email": "suraj1234@gmail.com",
+        "password": "$2a$08$f8SwrgV1f5XMJ0vEU5cSjO3AvLjTjT1sdoSyQL/tt8TZfi.6hBI2C",
+        "roles": [
+            "ROLE_USER"
+        ]
+    },
+    {
+        "id": "$2a$08$NS2vjIA60Q//GuDhDI1hy.XKQowibW42agGW3mV4q2Pmbzi648jwW",
+        "username": "",
+        "email": "",
+        "password": "$2a$08$2CnAgFJID.fu9T4NTesTNOTFofVE9Fmb4AZbI4OD36geNo7BT0i6W",
+        "roles": [
+            "ROLE_USER"
+        ]
+    },
+    {
+        "id": "$2a$08$LgbeEhXMvfQpxV1wfuB4tuBx1oFT.Q1wJYXTgyk2WUddmUzzJG252",
+        "username": "",
+        "email": "",
+        "password": "$2a$08$YN1jGeLcyJiMajv0Z6wzdO39wYk3V5ZleNQxTmuEDal500GbRPBCy",
+        "roles": [
+            "ROLE_USER"
+        ]
+    },
+  
+    {
+        "id": "$2a$08$ZD8DkZ.f8WJe4AiBoCvxMeBBBaLZ.wXWzl.P1coJ3T6glA3VKjujK",
+        "username": "jassi",
+        "email": "jassi@gmail.com",
+        "password": "$2a$08$U6vL4kLXXthBmdPmCORKO.PsCVVU8/XX93q8hMlNXXKI.OIa6/CCS",
+        "roles": [
+            "ROLE_USER"
+        ]
+    }
+  
+]

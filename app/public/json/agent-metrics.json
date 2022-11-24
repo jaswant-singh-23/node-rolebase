@@ -1,0 +1,146 @@
+[
+  {
+    "id": "1",
+    "metric": "APE Issued",
+    "weightage": 5,
+    "customerview": "Yes",
+    "data": 4000,
+    "score": 200
+  },
+  {
+    "id": "2",
+    "metric": "Policy Count (Protection)",
+    "weightage": 15,
+    "customerview": "Yes",
+    "data": 10000,
+    "score": 1500
+  },
+  {
+    "id": "3",
+    "metric": "Policy Count (Savings)",
+    "weightage": 10,
+    "customerview": "Yes",
+    "data": 60000,
+    "score": 6000
+  },
+  {
+    "id": "4",
+    "metric": "Premium Amount (Protection)",
+    "weightage": 20,
+    "customerview": "Yes",
+    "data": 10000,
+    "score": 1000
+  },
+  {
+    "id": "5",
+    "metric": "Premium Amount (Savings)",
+    "weightage": 25,
+    "customerview": "No",
+    "data": 1000,
+    "score": 100
+  },
+  {
+    "id": "6",
+    "metric": "Amount of Covers",
+    "weightage": 12,
+    "customerview": "No",
+    "data": 500,
+    "score": 60
+  },
+  {
+    "id": "7",
+    "metric": "Persistency",
+    "weightage": 10,
+    "customerview": "Yes",
+    "data": 1000,
+    "score": 100
+  },
+  {
+    "id": "8",
+    "metric": "Online Servincing Adoptation",
+    "weightage": 13,
+    "customerview": "No",
+    "data": 4000,
+    "score": 520
+  },
+  {
+    "id": "9",
+    "metric": "ZPRO Adoption",
+    "weightage": 18,
+    "customerview": "No",
+    "data": 5000,
+    "score": 900
+  },
+  {
+    "id": "10",
+    "metric": "Average Premium (Protection)",
+    "weightage": 15,
+    "customerview": "Yes",
+    "data": 15000,
+    "score": 2250
+  },
+  {
+    "id": "11",
+    "metric": "Application Submitted",
+    "weightage": 3,
+    "customerview": "Yes",
+    "data": 1000,
+    "score": 320
+  },
+  {
+    "id": "12",
+    "metric": "Commission Earned",
+    "weightage": 2,
+    "customerview": "No",
+    "data": 40000,
+    "score": 800
+  },
+  {
+    "id": "13",
+    "metric": "No. of claims facilitated",
+    "weightage": 10,
+    "customerview": "Yes",
+    "data": 200,
+    "score": 20
+  },
+  {
+    "id": "14",
+    "metric": "MDRT Qualification",
+    "weightage": 21,
+    "customerview": "No",
+    "data": 100,
+    "score": 21
+  },
+  {
+    "id": "15",
+    "metric": "Professional Industry Qualification",
+    "weightage": 8,
+    "customerview": "No",
+    "data": 0,
+    "score": 0
+  },
+  {
+    "id": "16",
+    "metric": "Educational Qualification",
+    "weightage": 10,
+    "customerview": "Yes",
+    "data": 100,
+    "score": 10
+  },
+  {
+    "id": "17",
+    "metric": "Professional Industry Experience",
+    "weightage": 9,
+    "customerview": "No",
+    "data": 200,
+    "score": 18
+  },
+  {
+    "id": "18",
+    "metric": "Quiz",
+    "weightage": 5,
+    "customerview": "Yes",
+    "data": 0,
+    "score": 0
+  }
+]

@@ -1,0 +1,1 @@
+[{"id":"1","name":"Bronze","minRange":"1","maxRange":"5000","status":"inactive"},{"id":"2","name":"Silver","minRange":"5001","maxRange":"9000","status":"inactive"},{"id":"3","name":"Gold","minRange":"9001","maxRange":"20000","status":"inactive"}]
