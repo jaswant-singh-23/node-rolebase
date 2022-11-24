@@ -1,3 +1,3 @@
 module.exports = {
-  secret: "zurich-secret-key"
+  secret: "ameo-secret-key"
 };

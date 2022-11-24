@@ -18,9 +18,10 @@ app.use(express.urlencoded({ extended: true }));
 
 const db = require("./app/models");
 const Role = db.role;
-
+const mongoUri = `mongodb+srv://jaswant_ameotech:${dbConfig.Password}@cluster0.qm1rks6.mongodb.net/?retryWrites=true&w=majority`;
 db.mongoose
-  .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
+  // .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
+    .connect(mongoUri,{
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
@@ -35,7 +36,7 @@ db.mongoose
 
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to bezkoder application." });
+  res.json({ message: "Welcome to Ameo hrm application." });
 });
 
 // routes
