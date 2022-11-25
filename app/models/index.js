@@ -9,6 +9,8 @@ db.user = require("./user.model");
 db.role = require("./role.model");
 db.metrics = require("./metrics.model");
 db.bands = require("./bands.model");
+db.profile = require("./profile.model");
+
 
 db.ROLES = ["user", "admin", "moderator"];
 

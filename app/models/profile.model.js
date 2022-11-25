@@ -3,8 +3,10 @@ const mongoose = require("mongoose");
 const Profile = mongoose.model(
   "Profile",
   new mongoose.Schema({
+    avatar: String,
     name: String,
     username: String,
+    password: String,
     email: String,
     phone: Number,
     designation: String,
