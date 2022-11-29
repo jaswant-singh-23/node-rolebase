@@ -26,14 +26,5 @@ module.exports = function(app) {
     [authJwt.verifyToken, authJwt.isAdmin],
     controller.adminBoard
   );
-  // app.post(
-  //   "/api/profiles",
-  //   [authJwt.verifyToken],
-  //   controller.profileGet
-  // );
-  // app.post(
-  //   "/api/profile-add",
-  //   [verifySignUp.checkDuplicateUsernameOrEmail],
-  //   controller.profileAdd
-  // );
+
 };
