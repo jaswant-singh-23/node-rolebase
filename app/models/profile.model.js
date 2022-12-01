@@ -24,7 +24,7 @@ const Profile = mongoose.model(
         ref: "Role",
       },
     ],
-  })
+  },{ timestamps: true })
 );
 
 module.exports = Profile;

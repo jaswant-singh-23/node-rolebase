@@ -2,12 +2,8 @@ const config = require("../config/auth.config");
 const db = require("../models");
 const fs = require("fs");
 
-const metric_data = require("../public/json/metrics.json");
-
 const User = db.user;
 const Role = db.role;
-const Metrics = db.metrics;
-const Bands = db.bands;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");

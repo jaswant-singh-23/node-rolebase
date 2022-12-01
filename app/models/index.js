@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 
 const db = {};
@@ -7,10 +7,8 @@ db.mongoose = mongoose;
 
 db.user = require("./user.model");
 db.role = require("./role.model");
-db.metrics = require("./metrics.model");
-db.bands = require("./bands.model");
+db.leave = require("./leave.model");
 db.profile = require("./profile.model");
-
 
 db.ROLES = ["user", "admin", "moderator"];
 

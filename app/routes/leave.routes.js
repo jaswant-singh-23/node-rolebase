@@ -1,5 +1,5 @@
-const { verifySignUp,authJwt } = require("../middlewares");
-const controller = require("../controllers/profile.controller");
+const { authJwt } = require("../middlewares");
+const controller = require("../controllers/leave.controller");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -10,15 +10,6 @@ module.exports = function (app) {
     next();
   });
 
-  app.get(
-    "/api/profile-details",
-    [authJwt.verifyToken],
-    controller.profileDetails
-  );
-  app.get(
-    "/api/profile-Add",
-    [authJwt.verifyToken],
-    controller.profileAdd
-  );
-
+  app.get("/api/leave-details", [authJwt.verifyToken], controller.leaveDetails);
+  app.post("/api/leave-apply", [authJwt.verifyToken], controller.leaveApply);
 };

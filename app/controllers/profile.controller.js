@@ -2,17 +2,47 @@ const config = require("../config/auth.config");
 const db = require("../models");
 const fs = require("fs");
 
-const metric_data = require("../public/json/metrics.json");
-
 const User = db.user;
 const Role = db.role;
-const Metrics = db.metrics;
-const Bands = db.bands;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
 exports.profileDetails = (req, res) => {
+  console.log(req.headers["slug"]);
+  User.findOne(
+    {
+      username: req.headers["slug"],
+    },
+    ($project = {
+      panCard: 0,
+      _id: 0,
+      aadharcard: 0,
+      currentCTC: 0,
+      bankDetail: 0,
+      __v: 0,
+      roles: 0,
+    })
+  )
+    .populate("roles", "-__v")
+    .exec((err, user) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+
+      if (!user) {
+        return res.status(404).send({ message: "User Not found." });
+      }
+
+      res.status(200).send({
+        data: user,
+        message: "User was signin successfully!",
+      });
+    });
+};
+
+exports.ProfileGetById = (req, res) => {
   console.log(req.headers["slug"]);
   User.findOne(
     {
@@ -67,7 +97,7 @@ exports.profileAdd = (req, res) => {
   console.log(data);
 };
 
-/*
+
 exports.profileAdd = (req, res) => {
   console.log("_____", req.body);
   const profile = new Profile({
@@ -202,4 +232,4 @@ const upload = async (req, res) => {
       message: `Could not upload the file: ${req.file.originalname}. ${err}`,
     });
   }
-};*/
+};
