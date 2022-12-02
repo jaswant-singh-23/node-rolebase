@@ -75,6 +75,99 @@ exports.signup = (req, res) => {
   });
 };
 
+exports.addUser = async (req, res) => {
+  const reader = require("xlsx");
+
+  const file = reader.readFile("app/public/excel/Book1.xlsx");
+
+  let data = [];
+
+  const sheets = file.SheetNames;
+
+  for (let i = 0; i < sheets.length; i++) {
+    const temp = reader.utils.sheet_to_json(file.Sheets[file.SheetNames[i]]);
+    temp.forEach((res) => {
+      data.push(res);
+    });
+  }
+
+    var userdata = [];
+    data.forEach((item) => {
+      const data = checkDuplicateUsernameOrEmail(
+        { email: item.email, username: item.username },
+        res
+      );
+
+      console.log(data, "-------");
+      userdata.push(
+        new User({
+          avatar: "",
+          name: item.name,
+          username: item.username,
+          email: item.email,
+          phone: item.phone,
+          password: bcrypt.hashSync(item.password.toString(), 8),
+          designation: item.designation,
+          department: item.department,
+          dateofjoining: item.dateofjoining,
+          currentCTC: item.currentCTC,
+          panCard: item.panCard,
+          aadharcard: item.aadharcard,
+          address: item.address,
+          dateofbirth: item.dateofbirth,
+          bankDetail: item.bankDetail,
+        })
+      );
+    });
+    res.send({ data: userdata });
+    //   userdata.save((err, user) => {
+    //     if (err) {
+    //       res.status(500).send({ err: "error", message: err });
+    //       return;
+    //     }
+
+    //     if (req.body.roles) {
+    //       Role.find(
+    //         {
+    //           name: { $in: req.body.roles },
+    //         },
+    //         (err, roles) => {
+    //           if (err) {
+    //             res.status(500).send({ message: err });
+    //             return;
+    //           }
+
+    //           user.roles = roles.map((role) => role._id);
+    //           user.save((err) => {
+    //             if (err) {
+    //               res.status(500).send({ message: err });
+    //               return;
+    //             }
+
+    //             res.send({ message: "User was registered successfully!" });
+    //           });
+    //         }
+    //       );
+    //     } else {
+    //       Role.findOne({ name: "user" }, (err, role) => {
+    //         if (err) {
+    //           res.status(500).send({ message: err });
+    //           return;
+    //         }
+
+    //         user.roles = [role._id];
+    //         user.save((err) => {
+    //           if (err) {
+    //             res.status(500).send({ message: err });
+    //             return;
+    //           }
+    //           res.send({ message: "User was registered successfully!" });
+    //         });
+    //       });
+    //     }
+    //   });
+  
+};
 exports.signin = (req, res) => {
   console.log("_____", req.body);
   User.findOne({
@@ -127,4 +220,36 @@ exports.signin = (req, res) => {
         message: "User was signin successfully!",
       });
     });
+};
+
+const checkDuplicateUsernameOrEmail = (req, res, next) => {
+
+  User.findOne({
+    username: req.username,
+  }).exec((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+
+    if (user) {
+      res.status(400).send({ message: "Failed! Username is already in use!" });
+      return req.username;
+    }
+    User.findOne({
+      email: req.email,
+    }).exec((err, user) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+
+      if (user) {
+        res.status(400).send({ message: "Failed! Email is already in use!" });
+        return req.email;
+      }
+
+      next();
+    });
+  });
 };
