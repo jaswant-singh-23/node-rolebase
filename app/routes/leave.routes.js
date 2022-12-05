@@ -10,6 +10,10 @@ module.exports = function (app) {
     next();
   });
 
-  app.get("/api/leave-details", [authJwt.verifyToken], controller.leaveDetails);
+  app.get(
+    "/api/leave-details",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.leaveDetails
+  );
   app.post("/api/leave-apply", [authJwt.verifyToken], controller.leaveApply);
 };

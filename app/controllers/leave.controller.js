@@ -7,7 +7,7 @@ const Leave = db.leave;
 exports.leaveDetails = (req, res) => {
   const username = req.headers["slug"];
   console.log(username);
-  Leave.findOne({ username: username })
+  Leave.find({ username: username })
     .populate("roles", "-__v")
     .exec((err, user) => {
       if (err) {

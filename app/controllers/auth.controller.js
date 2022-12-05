@@ -82,92 +82,83 @@ exports.addUser = async (req, res) => {
 
   let data = [];
 
-  const sheets = file.SheetNames;
+  const temp = reader.utils.sheet_to_json(file.Sheets[file.SheetNames[0]]);
+  data = temp;
 
-  for (let i = 0; i < sheets.length; i++) {
-    const temp = reader.utils.sheet_to_json(file.Sheets[file.SheetNames[i]]);
-    temp.forEach((res) => {
-      data.push(res);
-    });
-  }
+  data.forEach(async (item) => {
+    User.find(
+      { email: item.email, username: item.username },
+      function (err, obj) {
+        if (obj.length == 0 || obj.length == null) {
+          const user = new User({
+            avatar: "",
+            name: item.name,
+            username: item.username,
+            email: item.email,
+            phone: item.phone,
+            password: bcrypt.hashSync(item.password.toString(), 8),
+            designation: item.designation,
+            department: item.department,
+            dateofjoining: item.dateofjoining,
+            currentCTC: item.currentCTC,
+            panCard: item.panCard,
+            aadharcard: item.aadharcard,
+            address: item.address,
+            dateofbirth: item.dateofbirth,
+            bankDetail: item.bankDetail,
+          });
 
-    var userdata = [];
-    data.forEach((item) => {
-      const data = checkDuplicateUsernameOrEmail(
-        { email: item.email, username: item.username },
-        res
-      );
+          user.save(function (err, user) {
+            if (err) {
+              return res.status(500).send({
+                message: err.message || "some error occured",
+              });
+            }
+            if (item.roles) {
+              Role.find(
+                {
+                  name: { $in: item.roles },
+                },
+                (err, roles) => {
+                  if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                  }
 
-      console.log(data, "-------");
-      userdata.push(
-        new User({
-          avatar: "",
-          name: item.name,
-          username: item.username,
-          email: item.email,
-          phone: item.phone,
-          password: bcrypt.hashSync(item.password.toString(), 8),
-          designation: item.designation,
-          department: item.department,
-          dateofjoining: item.dateofjoining,
-          currentCTC: item.currentCTC,
-          panCard: item.panCard,
-          aadharcard: item.aadharcard,
-          address: item.address,
-          dateofbirth: item.dateofbirth,
-          bankDetail: item.bankDetail,
-        })
-      );
-    });
-    res.send({ data: userdata });
-    //   userdata.save((err, user) => {
-    //     if (err) {
-    //       res.status(500).send({ err: "error", message: err });
-    //       return;
-    //     }
+                  user.roles = roles.map((role) => role._id);
+                  user.save((err) => {
+                    if (err) {
+                      res.status(500).send({ message: err });
+                      return;
+                    }
+                    res.send({ message: "User was registered successfully!" });
+                  });
+                }
+              );
+            } else {
+              Role.findOne({ name: "user" }, (err, role) => {
+                if (err) {
+                  res.status(500).send({ message: err });
+                  return;
+                }
 
-    //     if (req.body.roles) {
-    //       Role.find(
-    //         {
-    //           name: { $in: req.body.roles },
-    //         },
-    //         (err, roles) => {
-    //           if (err) {
-    //             res.status(500).send({ message: err });
-    //             return;
-    //           }
-
-    //           user.roles = roles.map((role) => role._id);
-    //           user.save((err) => {
-    //             if (err) {
-    //               res.status(500).send({ message: err });
-    //               return;
-    //             }
-
-    //             res.send({ message: "User was registered successfully!" });
-    //           });
-    //         }
-    //       );
-    //     } else {
-    //       Role.findOne({ name: "user" }, (err, role) => {
-    //         if (err) {
-    //           res.status(500).send({ message: err });
-    //           return;
-    //         }
-
-    //         user.roles = [role._id];
-    //         user.save((err) => {
-    //           if (err) {
-    //             res.status(500).send({ message: err });
-    //             return;
-    //           }
-    //           res.send({ message: "User was registered successfully!" });
-    //         });
-    //       });
-    //     }
-    //   });
-  
+                user.roles = [role._id];
+                user.save((err) => {
+                  if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                  }
+                  res.send({ message: "User was registered successfully!" });
+                });
+              });
+            }
+          });
+        }
+      }
+    );
+  });
 };
+
 exports.signin = (req, res) => {
   console.log("_____", req.body);
   User.findOne({
@@ -210,46 +201,9 @@ exports.signin = (req, res) => {
         username: user.username,
         email: user.email,
         name: user.name,
-        // phone: user.phone,
-        // designation: user.designation,
-        // department: user.department,
-        // address: user.address,
-        // dateofbirth: user.dateofbirth,
         roles: authorities,
         accessToken: token,
         message: "User was signin successfully!",
       });
     });
-};
-
-const checkDuplicateUsernameOrEmail = (req, res, next) => {
-
-  User.findOne({
-    username: req.username,
-  }).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
-
-    if (user) {
-      res.status(400).send({ message: "Failed! Username is already in use!" });
-      return req.username;
-    }
-    User.findOne({
-      email: req.email,
-    }).exec((err, user) => {
-      if (err) {
-        res.status(500).send({ message: err });
-        return;
-      }
-
-      if (user) {
-        res.status(400).send({ message: "Failed! Email is already in use!" });
-        return req.email;
-      }
-
-      next();
-    });
-  });
 };

@@ -10,7 +10,7 @@ var bcrypt = require("bcryptjs");
 
 exports.profileDetails = (req, res) => {
   console.log(req.headers["slug"]);
-  User.findOne(
+  User.find(
     {
       username: req.headers["slug"],
     },
@@ -37,7 +37,7 @@ exports.profileDetails = (req, res) => {
 
       res.status(200).send({
         data: user,
-        message: "User was signin successfully!",
+        message: "success",
       });
     });
 };
@@ -71,7 +71,7 @@ exports.ProfileGetById = (req, res) => {
 
       res.status(200).send({
         data: user,
-        message: "User was signin successfully!",
+        message: "success",
       });
     });
 };

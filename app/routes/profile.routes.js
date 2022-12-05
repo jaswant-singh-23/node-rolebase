@@ -1,4 +1,4 @@
-const { verifySignUp,authJwt } = require("../middlewares");
+const { verifySignUp, authJwt } = require("../middlewares");
 const controller = require("../controllers/profile.controller");
 
 module.exports = function (app) {
@@ -11,14 +11,19 @@ module.exports = function (app) {
   });
 
   app.get(
-    "/api/profile-details",
+    "/api/get-a-profile",
     [authJwt.verifyToken],
+    controller.ProfileGetById
+  );
+
+  app.get(
+    "/api/profile-details",
+    [authJwt.verifyToken, authJwt.isModerator],
     controller.profileDetails
   );
   app.get(
     "/api/profile-Add",
-    [authJwt.verifyToken],
+    [authJwt.verifyToken, authJwt.isModerator],
     controller.profileAdd
   );
-
 };
