@@ -7,7 +7,7 @@ const Leave = db.leave;
 exports.leaveDetails = (req, res) => {
   const username = req.headers["slug"];
   console.log(username);
-  Leave.find({ username: username })
+  Leave.find()
     .populate("roles", "-__v")
     .exec((err, user) => {
       if (err) {
@@ -21,7 +21,7 @@ exports.leaveDetails = (req, res) => {
 
       res.status(200).send({
         data: user,
-        message: "User was signin successfully!",
+        message: "success",
       });
     });
 };
@@ -55,6 +55,27 @@ exports.leaveApply = (req, res) => {
     res.status(200).send({
       data: user,
       message: "Leave apply successfully!",
+    });
+  });
+};
+
+exports.leaveReply = (req, res) => {
+  const leaves = new Leave({
+    name: req.body.name,
+    username: req.body.username,
+    department: req.body.department,
+    leaveStatus: req.body.leaveStatus,
+    rejectReason: req.body.rejectReason,
+  });
+  console.log("-------------", leaves);
+  leaves.update({ username: username }, (err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+    res.status(200).send({
+      data: user,
+      message: "Success!",
     });
   });
 };

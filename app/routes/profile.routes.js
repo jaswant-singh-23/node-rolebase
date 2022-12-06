@@ -26,4 +26,10 @@ module.exports = function (app) {
     [authJwt.verifyToken, authJwt.isModerator],
     controller.profileAdd
   );
+
+  app.get(
+    "/api/departments",
+    // [authJwt.verifyToken],
+    controller.departmentDetails
+  );
 };

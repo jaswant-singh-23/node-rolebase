@@ -211,3 +211,52 @@ const upload = async (req, res) => {
     });
   }
 };
+
+exports.departmentDetails = (req, res) => {
+  const data = {
+    dotnet: [],
+    reactjs: [],
+    designer: [],
+    dataentry: [],
+    angular: [],
+    python: [],
+    marketing: [],
+  };
+  User.find(
+    { department: { $ne: "Admin", $ne: "HRM" } },
+    { department: 1, name: 1, designation: 1 },
+
+    (err, user) => {
+      if (err) {
+        res.status(500).send({ err: "error", message: err });
+        return;
+      }
+      //       React JS
+      // Web Designer
+      // Dot Net
+      // Data Entry
+      // Python
+      // Angular
+      // Digital Marketing
+      user.forEach((item, i) => {
+        if (item.department == "Dot Net") {
+          data.dotnet.push(item);
+        } else if (item.department == "React js") {
+          data.reactjs.push(item);
+        } else if (item.department == "Web Designer") {
+          data.designer.push(item);
+        } else if (item.department == "Data Entry") {
+          data.dataentry.push(item);
+        } else if (item.department == "Angular") {
+          data.angular.push(item);
+        } else if (item.department == "Python") {
+          data.python.push(item);
+        } else if (item.department == "Digital Marketing") {
+          data.marketing.push(item);
+        }
+      });
+      console.log(data);
+      res.send({ data: data, message: "Success!" });
+    }
+  );
+};
