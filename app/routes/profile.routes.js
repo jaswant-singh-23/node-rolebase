@@ -17,7 +17,7 @@ module.exports = function (app) {
   );
 
   app.get(
-    "/api/profile-details",
+    "/api/all-profile-details",
     [authJwt.verifyToken, authJwt.isModerator],
     controller.profileDetails
   );
@@ -31,5 +31,21 @@ module.exports = function (app) {
     "/api/departments",
     // [authJwt.verifyToken],
     controller.departmentDetails
+  );
+
+  app.post(
+    "/api/get-particular-profile",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.GetParticularProfile
+  );
+  app.post(
+    "/api/update-employee-details",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.updateEmployeeDetails
+  );
+  app.post(
+    "/api/delete-employee-account",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.deleteEmployeeAccount
   );
 };

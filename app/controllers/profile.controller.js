@@ -11,9 +11,7 @@ var bcrypt = require("bcryptjs");
 exports.profileDetails = (req, res) => {
   console.log(req.headers["slug"]);
   User.find(
-    {
-      username: req.headers["slug"],
-    },
+    {},
     ($project = {
       panCard: 0,
       _id: 0,
@@ -76,6 +74,39 @@ exports.ProfileGetById = (req, res) => {
     });
 };
 
+
+exports.GetParticularProfile = (req, res) => {
+  User.findOne(
+    {
+      username: req.body.id,
+    },
+    ($project = {
+      panCard: 0,
+      _id: 0,
+      aadharcard: 0,
+      bankDetail: 0,
+      __v: 0,
+      roles: 0,
+    })
+  )
+    .populate("roles", "-__v")
+    .exec((err, user) => {
+      console.log(user)
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+
+      if (!user) {
+        return res.status(404).send({ message: "User Not found." });
+      }
+
+      res.status(200).send({
+        data: user,
+        message: "success",
+      });
+    });
+};
 exports.profileAdd = (req, res) => {
   console.log("_____", req.body);
   const profile = new Profile({
@@ -224,7 +255,7 @@ exports.departmentDetails = (req, res) => {
   };
   User.find(
     { department: { $ne: "Admin", $ne: "HRM" } },
-    { department: 1, name: 1, designation: 1 },
+    { department: 1, name: 1, designation: 1, username:1 },
 
     (err, user) => {
       if (err) {
@@ -259,4 +290,73 @@ exports.departmentDetails = (req, res) => {
       res.send({ data: data, message: "Success!" });
     }
   );
+};
+
+
+exports.updateEmployeeDetails = (req, res) => {
+  console.log(req.headers["slug"]);
+  res.send({data:req.body})
+  // User.findOne(
+  //   {
+  //     username: req.headers["slug"],
+  //   },
+  //   ($project = {
+  //     panCard: 0,
+  //     _id: 0,
+  //     aadharcard: 0,
+  //     currentCTC: 0,
+  //     bankDetail: 0,
+  //     __v: 0,
+  //     roles: 0,
+  //   })
+  // )
+  //   .populate("roles", "-__v")
+  //   .exec((err, user) => {
+  //     if (err) {
+  //       res.status(500).send({ message: err });
+  //       return;
+  //     }
+
+  //     if (!user) {
+  //       return res.status(404).send({ message: "User Not found." });
+  //     }
+
+  //     res.status(200).send({
+  //       data: user,
+  //       message: "success",
+  //     });
+  //   });
+};
+
+
+exports.deleteEmployeeAccount = async (req, res) => {
+  const uid = req.body.id;
+  res.send(req.body)
+
+  // await fs.readFile('app/public/excel/Book1.xlsx', function (err, result) {
+
+  //   if (err) {
+  //     res.status(500).send({ message: err });
+  //     return;
+  //   }
+  //   var results = JSON.parse(result);
+
+  //   results.forEach((element, index) => {
+  //     if (element.id == uid) {
+  //       results.splice(index, 1);
+  //     }
+  //   })
+
+  //   fs.writeFile("app/public/excel/Book1.xlsx", JSON.stringify(results), function (err, response) {
+  //     if (err) {
+  //       res.status(500).send({ message: err });
+  //       return;
+  //     }
+
+  //     res.status(200).send({
+  //       message: response,
+  //       message: "Employee Data was delete successfully"
+  //     });
+  //   });
+  // });
 };
