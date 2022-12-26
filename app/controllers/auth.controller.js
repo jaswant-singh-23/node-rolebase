@@ -78,7 +78,8 @@ exports.signup = (req, res) => {
 exports.addUser = async (req, res) => {
   const reader = require("xlsx");
 
-  const file = reader.readFile("app/public/excel/Book1.xlsx");
+  // const file = reader.readFile("app/public/excel/Book1.xlsx");
+  const file = reader.readFile(req.file.destination + "/" + req.file.filename);
 
   let data = [];
 
@@ -106,8 +107,9 @@ exports.addUser = async (req, res) => {
             address: item.address,
             dateofbirth: item.dateofbirth,
             bankDetail: item.bankDetail,
+            activeStatus: true,
           });
-
+          console.log('==================', user)
           user.save(function (err, user) {
             if (err) {
               return res.status(500).send({
@@ -192,9 +194,10 @@ exports.signin = (req, res) => {
       });
 
       var authorities = [];
-
-      for (let i = 0; i < user.roles.length; i++) {
-        authorities.push("ROLE_" + user.roles[i].name.toUpperCase());
+      if (user.roles.length) {
+        for (let i = 0; i < user.roles.length; i++) {
+          authorities.push("ROLE_" + user.roles[i].name.toUpperCase());
+        }
       }
       res.status(200).send({
         id: user._id,

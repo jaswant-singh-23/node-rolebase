@@ -4,7 +4,10 @@ const Leave = mongoose.model(
   "Leave",
   new mongoose.Schema(
     {
-      totalLeaves: Number,
+      totalLeaves: {
+        type: Number,
+        required: true
+      },
       pendingLeaves: Number,
       reason: String,
       name: String,
