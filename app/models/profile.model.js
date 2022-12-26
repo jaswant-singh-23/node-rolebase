@@ -4,19 +4,52 @@ const Profile = mongoose.model(
   "Profile",
   new mongoose.Schema({
     avatar: String,
-    name: String,
-    username: String,
-    password: String,
-    email: String,
-    phone: Number,
-    designation: String,
-    department: String,
-    dateofjoining: Date,
-    currentCTC: Number,
+    name: {
+      type: String,
+      required: true,
+    },
+    username: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: Number,
+      required: true,
+    },
+    designation: {
+      type: String,
+      required: true,
+    },
+    department: {
+      type: String,
+      required: true,
+    },
+    dateofjoining: {
+      type: Date,
+      required: true,
+    },
+    currentCTC: {
+      type: Number,
+      required: true,
+    },
     panCard: String,
     aadharcard: String,
-    address: String,
-    dateofbirth: Date,
+    address: {
+      type: String,
+      required: true,
+    },
+    dateofbirth: {
+      type: Date,
+      required: true,
+    },
     bankDetail: String,
     roles: [
       {
@@ -24,7 +57,7 @@ const Profile = mongoose.model(
         ref: "Role",
       },
     ],
-  },{ timestamps: true })
+  }, { timestamps: true })
 );
 
 module.exports = Profile;

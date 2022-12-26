@@ -4,6 +4,7 @@ const fs = require("fs");
 
 const User = db.user;
 const Role = db.role;
+const Inventory = db.inventory;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
@@ -74,7 +75,6 @@ exports.ProfileGetById = (req, res) => {
     });
 };
 
-
 exports.GetParticularProfile = (req, res) => {
   User.findOne(
     {
@@ -91,7 +91,7 @@ exports.GetParticularProfile = (req, res) => {
   )
     .populate("roles", "-__v")
     .exec((err, user) => {
-      console.log(user)
+      console.log(user);
       if (err) {
         res.status(500).send({ message: err });
         return;
@@ -225,6 +225,11 @@ exports.profileEdit = (req, res) => {
     });
 };
 
+exports.avatarUpload = (req, res) => {
+  console.log(req.file.path, "================================");
+  res.send({ message: "Success", data: req.body });
+};
+
 const upload = async (req, res) => {
   try {
     await uploadFile(req, res);
@@ -255,7 +260,9 @@ exports.departmentDetails = (req, res) => {
   };
   User.find(
     { department: { $ne: "Admin", $ne: "HRM" } },
-    { department: 1, name: 1, designation: 1, username:1 },
+    { department: 1, name: 1, designation: 1, username: 1 },
+
+    { department: 1, name: 1, designation: 1, username: 1 },
 
     (err, user) => {
       if (err) {
@@ -292,10 +299,13 @@ exports.departmentDetails = (req, res) => {
   );
 };
 
-
 exports.updateEmployeeDetails = (req, res) => {
   console.log(req.headers["slug"]);
-  res.send({data:req.body})
+  res.send({ data: req.body });
+};
+exports.updateEmployeeDetails = (req, res) => {
+  console.log(req.headers["slug"]);
+  res.send({ data: req.body });
   // User.findOne(
   //   {
   //     username: req.headers["slug"],
@@ -328,10 +338,9 @@ exports.updateEmployeeDetails = (req, res) => {
   //   });
 };
 
-
 exports.deleteEmployeeAccount = async (req, res) => {
   const uid = req.body.id;
-  res.send(req.body)
+  res.send(req.body);
 
   // await fs.readFile('app/public/excel/Book1.xlsx', function (err, result) {
 
@@ -359,4 +368,83 @@ exports.deleteEmployeeAccount = async (req, res) => {
   //     });
   //   });
   // });
+};
+
+/////////////////////////// Inventory Control ////////////////////////////////
+
+exports.inventoryAdd = async (req, res) => {
+  const inventory = new Inventory({
+    email: req.body.email,
+    username: req.body.username,
+    totalItems: req.body.totalItems,
+    itemName: req.body.itemName,
+  });
+
+  inventory.save((err, result) => {
+    if (err) {
+      res.status(500).send({ err: "error", message: err });
+      return;
+    }
+    res.send({ message: "success", data: result });
+  });
+};
+exports.inventoryView = async (req, res) => {
+  Inventory.find({}, (err, result) => {
+    if (err) {
+      res.status(500).send({ err: "error", message: err });
+      return;
+    }
+    res.send({ message: "success", data: result });
+  });
+};
+
+exports.inventoryEdit = async (req, res) => {
+  const inventory = new Inventory({
+    email: req.body.email,
+    username: req.body.username,
+    totalItems: req.body.totalItems,
+    itemName: req.body.itemName,
+  });
+
+  inventory.updateOne((err, result) => {
+    if (err) {
+      res.status(500).send({ err: "error", message: err });
+      return;
+    }
+    res.send({ message: "success", data: result });
+  });
+};
+
+///////////////////////////////////////  Alumni /////////////////////////////////////
+
+exports.alumnidetails = (req, res) => {
+  console.log(req.headers["slug"]);
+  User.find(
+    { activeStatus: false },
+    ($project = {
+      panCard: 0,
+      _id: 0,
+      aadharcard: 0,
+      currentCTC: 0,
+      bankDetail: 0,
+      __v: 0,
+      roles: 0,
+    })
+  )
+    .populate("roles", "-__v")
+    .exec((err, user) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+
+      if (!user) {
+        return res.status(404).send({ message: "User Not found." });
+      }
+
+      res.status(200).send({
+        data: user,
+        message: "success",
+      });
+    });
 };

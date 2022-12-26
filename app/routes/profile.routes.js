@@ -1,6 +1,6 @@
 const { verifySignUp, authJwt } = require("../middlewares");
 const controller = require("../controllers/profile.controller");
-
+const upload = require("../middlewares/upload");
 module.exports = function (app) {
   app.use(function (req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -47,5 +47,30 @@ module.exports = function (app) {
     "/api/delete-employee-account",
     [authJwt.verifyToken, authJwt.isModerator],
     controller.deleteEmployeeAccount
+  );
+  app.post(
+    "/api/upload-user-avatar",
+    [authJwt.verifyToken, upload.single('image')],
+    controller.avatarUpload
+  );
+  app.get(
+    "/api/inventory-view",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.inventoryView
+  );
+  app.post(
+    "/api/inventory-add",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.inventoryAdd
+  );
+  app.post(
+    "/api/inventory-edit",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.inventoryAdd
+  );
+  app.get(
+    "/api/alumni-view",
+    // [authJwt.verifyToken, authJwt.isModerator],
+    controller.alumnidetails
   );
 };
