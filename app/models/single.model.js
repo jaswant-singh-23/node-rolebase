@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
-const User = mongoose.model(
-  "User",
+const Single = mongoose.model(
+  "Single",
   new mongoose.Schema({
     avatar: {
       type: String,
@@ -16,6 +16,7 @@ const User = mongoose.model(
     },
     password: {
       type: String,
+      required: true,
     },
     email: {
       type: String,
@@ -39,29 +40,13 @@ const User = mongoose.model(
     currentCTC: {
       type: Number,
     },
-    panCard: {
-      type: String,
-    },
-    aadharcard: {
-      type: String,
-    },
     address: {
       type: String,
     },
     dateofbirth: {
       type: Date,
     },
-    bankDetail: {
-      type: String,
-    },
-    activeStatus: Boolean,
-    roles: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Role",
-      },
-    ],
   },{ timestamps: true })
 );
 
-module.exports = User;
+module.exports = Single;

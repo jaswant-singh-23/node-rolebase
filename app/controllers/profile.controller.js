@@ -5,9 +5,12 @@ const fs = require("fs");
 const User = db.user;
 const Role = db.role;
 const Inventory = db.inventory;
+const Single = db.single;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+const { request } = require("http");
+const { response } = require("express");
 
 exports.profileDetails = (req, res) => {
   console.log(req.headers["slug"]);
@@ -259,23 +262,13 @@ exports.departmentDetails = (req, res) => {
     marketing: [],
   };
   User.find(
-    { department: { $ne: "Admin", $ne: "HRM" } },
+    { department: { $ne: "Admin", $ne: "HRM" }, activeStatus: true },
     { department: 1, name: 1, designation: 1, username: 1 },
-
-    { department: 1, name: 1, designation: 1, username: 1 },
-
     (err, user) => {
       if (err) {
         res.status(500).send({ err: "error", message: err });
         return;
       }
-      //       React JS
-      // Web Designer
-      // Dot Net
-      // Data Entry
-      // Python
-      // Angular
-      // Digital Marketing
       user.forEach((item, i) => {
         if (item.department == "Dot Net") {
           data.dotnet.push(item);
@@ -299,13 +292,35 @@ exports.departmentDetails = (req, res) => {
   );
 };
 
-exports.updateEmployeeDetails = (req, res) => {
-  console.log(req.headers["slug"]);
-  res.send({ data: req.body });
-};
-exports.updateEmployeeDetails = (req, res) => {
-  console.log(req.headers["slug"]);
-  res.send({ data: req.body });
+// exports.updateEmployeeDetails = async (req, res) => {
+//   console.log(req.headers["slug"]);
+//   res.send({ data: req.body });
+// };
+exports.updateEmployeeDetails = async (req, res) => {
+  let slug = req.body.slug;
+  User.find({ username: slug }, (err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+
+    if (!user) {
+      return res.status(404).send({ message: "User Not found." });
+    } else {
+      User.updateOne(
+        { username: username },
+        { activeStatus: false },
+        (err, result) => {
+          res.status(200).send({
+            data: result,
+            message: "User account deleted successfully",
+          });
+        }
+      );
+    }
+  });
+  // console.log(req.headers["slug"]);
+  // res.send({ data: req.body });
   // User.findOne(
   //   {
   //     username: req.headers["slug"],
@@ -339,35 +354,18 @@ exports.updateEmployeeDetails = (req, res) => {
 };
 
 exports.deleteEmployeeAccount = async (req, res) => {
-  const uid = req.body.id;
-  res.send(req.body);
+  const username = req.body.id;
 
-  // await fs.readFile('app/public/excel/Book1.xlsx', function (err, result) {
-
-  //   if (err) {
-  //     res.status(500).send({ message: err });
-  //     return;
-  //   }
-  //   var results = JSON.parse(result);
-
-  //   results.forEach((element, index) => {
-  //     if (element.id == uid) {
-  //       results.splice(index, 1);
-  //     }
-  //   })
-
-  //   fs.writeFile("app/public/excel/Book1.xlsx", JSON.stringify(results), function (err, response) {
-  //     if (err) {
-  //       res.status(500).send({ message: err });
-  //       return;
-  //     }
-
-  //     res.status(200).send({
-  //       message: response,
-  //       message: "Employee Data was delete successfully"
-  //     });
-  //   });
-  // });
+  User.deleteOne({ username: username }, (err, user) => {
+    if (err) {
+      res.status(500).send({ err: "error", message: err });
+      return;
+    }
+    res.status(200).send({
+      data: user,
+      message: "Employee Data was delete successfully",
+    });
+  });
 };
 
 /////////////////////////// Inventory Control ////////////////////////////////
@@ -386,7 +384,7 @@ exports.inventoryAdd = async (req, res) => {
       return;
     }
     res.send({ message: "success", data: result });
-  });
+  })
 };
 exports.inventoryView = async (req, res) => {
   Inventory.find({}, (err, result) => {
@@ -395,24 +393,48 @@ exports.inventoryView = async (req, res) => {
       return;
     }
     res.send({ message: "success", data: result });
-  });
+  })
 };
 
-exports.inventoryEdit = async (req, res) => {
-  const inventory = new Inventory({
-    email: req.body.email,
-    username: req.body.username,
-    totalItems: req.body.totalItems,
-    itemName: req.body.itemName,
-  });
-
-  inventory.updateOne((err, result) => {
+exports.inventoryGetById = async (req, res) => {
+  const username = req.body.id;
+  console.log(username, req.headers)
+  Inventory.find({ username: username }, (err, result) => {
     if (err) {
       res.status(500).send({ err: "error", message: err });
       return;
     }
     res.send({ message: "success", data: result });
-  });
+  })
+};
+
+exports.inventoryEdit = async (req, res) => {
+  const id =  req.body.id
+  const inventory = {
+    email: req.body.email,
+    username: req.body.username,
+    totalItems: req.body.totalItems,
+    itemName: req.body.itemName,
+  };
+  Inventory.updateMany({ username: id }, { $set: inventory }, (err, result) => {
+    if (err) {
+      res.status(500).send({ err: "error", message: err });
+      return;
+    }
+    res.send({ message: "success", data: result });
+  })
+};
+
+exports.inventoryDelete = async (req, res) => {
+  const username = req.body.id;
+
+  Inventory.deleteOne({ username: username }, (err, result) => {
+    if (err) {
+      res.status(500).send({ err: "error", message: err });
+      return;
+    }
+    res.send({ message: "success", data: result });
+  })
 };
 
 ///////////////////////////////////////  Alumni /////////////////////////////////////
@@ -447,4 +469,29 @@ exports.alumnidetails = (req, res) => {
         message: "success",
       });
     });
+};
+
+exports.addToAlumni = (req, res) => {
+  const username = req.body.id;
+  User.find({ username: username }, (err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+
+    if (!user) {
+      return res.status(404).send({ message: "User Not found." });
+    } else {
+      User.updateOne(
+        { username: username },
+        { activeStatus: false },
+        (err, result) => {
+          res.status(200).send({
+            data: result,
+            message: "User account deleted successfully",
+          });
+        }
+      );
+    }
+  });
 };

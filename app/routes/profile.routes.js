@@ -29,7 +29,7 @@ module.exports = function (app) {
 
   app.get(
     "/api/departments",
-    // [authJwt.verifyToken],
+    [authJwt.verifyToken, authJwt.isModerator],
     controller.departmentDetails
   );
 
@@ -43,15 +43,25 @@ module.exports = function (app) {
     [authJwt.verifyToken, authJwt.isModerator],
     controller.updateEmployeeDetails
   );
-  app.post(
+  /*app.post(
     "/api/delete-employee-account",
     [authJwt.verifyToken, authJwt.isModerator],
     controller.deleteEmployeeAccount
+  );*/
+  app.post(
+    "/api/delete-employee-account",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.addToAlumni
   );
   app.post(
     "/api/upload-user-avatar",
-    [authJwt.verifyToken, upload.single('image')],
+    [authJwt.verifyToken, upload.single("image")],
     controller.avatarUpload
+  );
+  app.get(
+    "/api/inventory-view-by-id",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.inventoryGetById
   );
   app.get(
     "/api/inventory-view",
@@ -66,11 +76,16 @@ module.exports = function (app) {
   app.post(
     "/api/inventory-edit",
     [authJwt.verifyToken, authJwt.isModerator],
-    controller.inventoryAdd
+    controller.inventoryEdit
+  );
+  app.post(
+    "/api/inventory-edit",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.inventoryDelete
   );
   app.get(
     "/api/alumni-view",
-    // [authJwt.verifyToken, authJwt.isModerator],
+    [authJwt.verifyToken, authJwt.isModerator],
     controller.alumnidetails
   );
 };
