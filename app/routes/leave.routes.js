@@ -12,11 +12,20 @@ module.exports = function (app) {
 
   app.get(
     "/api/leave-details",
-    // [authJwt.verifyToken, authJwt.isModerator],
+    [authJwt.verifyToken, authJwt.isModerator],
     controller.leaveDetails
   );
   app.post("/api/leave-apply", [authJwt.verifyToken], controller.leaveApply);
 
-  app.post("/api/leave-reply", [authJwt.verifyToken], controller.leaveReply);
+  app.post(
+    "/api/leave-reply",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.leaveReply
+  );
 
+  app.post(
+    "/api/leave-notifications",
+    [authJwt.verifyToken],
+    controller.leaveNotifications
+  );
 };
