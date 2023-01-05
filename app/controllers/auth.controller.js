@@ -11,19 +11,19 @@ var bcrypt = require("bcryptjs");
 exports.signup = (req, res) => {
   const user = new User({
     avatar: req.body.data.avatar,
-    name: req.body.data.name,
-    username: req.body.data.username,
-    email: req.body.data.email,
-    phone: req.body.data.phone,
-    password: bcrypt.hashSync(req.body.data.password, 8),
-    designation: req.body.data.designation,
-    department: req.body.data.department,
-    dateofjoining: req.body.data.dateofjoining,
-    currentCTC: req.body.data.currentCTC,
+    name: req.body.data.name.trim(),
+    username: req.body.data.username.trim(),
+    email: req.body.data.email.trim(),
+    phone: req.body.data.phone.trim(),
+    password: bcrypt.hashSync(req.body.data.password.trim(), 8),
+    designation: req.body.data.designation.trim(),
+    department: req.body.data.department.trim(),
+    dateofjoining: req.body.data.dateofjoining.trim(),
+    currentCTC: req.body.data.currentCTC.trim(),
     panCard: req.body.data.panCard,
     aadharcard: req.body.data.aadharcard,
-    address: req.body.data.address,
-    dateofbirth: req.body.data.dateofbirth,
+    address: req.body.data.address.trim(),
+    dateofbirth: req.body.data.dateofbirth.trim(),
     bankDetail: req.body.data.bankDetail,
     activeStatus: true,
   });
@@ -76,17 +76,16 @@ exports.signup = (req, res) => {
   });
 };
 
+
 exports.addUser = async (req, res) => {
   const reader = require("xlsx");
-
-  // const file = reader.readFile("app/public/excel/Book1.xlsx");
   const file = reader.readFile(req.file.destination + "/" + req.file.filename);
 
   let data = [];
-  let message = "";
+  let message = [];
   const temp = reader.utils.sheet_to_json(file.Sheets[file.SheetNames[0]]);
   data = temp;
-  data.forEach(async (item) => {
+  data.map((item) => {
     User.find(
       { email: item.email, username: item.username },
       function (err, obj) {
@@ -94,13 +93,13 @@ exports.addUser = async (req, res) => {
           let password = item.password ? item.password.toString() : "123456";
           const user = new User({
             avatar: "",
-            name: item.name,
-            username: item.username,
-            email: item.email,
+            name: item.name.trim(),
+            username: item.username.trim(),
+            email: item.email.trim(),
             phone: item.phone,
-            password: bcrypt.hashSync(password, 8),
-            designation: item.designation,
-            department: item.department,
+            password: bcrypt.hashSync(password.trim(), 8),
+            designation: item.designation.trim(),
+            department: item.department.trim(),
             dateofjoining: item.dateofjoining,
             currentCTC: item.currentCTC,
             panCard: item.panCard,
@@ -111,14 +110,11 @@ exports.addUser = async (req, res) => {
             activeStatus: true,
           });
           if (!user) {
-            message = "User already exist or empty";
+            message.push({ err: "User already exist or empty" });
           } else {
             user.save(function (err, user) {
               if (err) {
-                // return res.status(500).send({
-                //   message: err.message || "some error occured",
-                // });
-                message = err;
+                message.push({ err: err });
               }
               if (item.roles) {
                 Role.find(
@@ -127,59 +123,51 @@ exports.addUser = async (req, res) => {
                   },
                   (err, roles) => {
                     if (err) {
-                      // res.status(500).send({ message: err });
-                      message = err;
-                      return;
+                      message.push({ err: err });
                     }
 
                     user.roles = roles.map((role) => role._id);
                     user.save((err) => {
                       if (err) {
-                        // res.status(500).send({ message: err });
-                        message = err;
-                        return;
+                        message.push({ err: err });
                       }
-                      message = "User was registered successfully!";
-                      // res.send({
-                      //   message: "User was registered successfully!",
-                      // });
+                      message.push({
+                        err: "User was registered successfully!",
+                      });
                     });
                   }
                 );
               } else {
                 Role.findOne({ name: "user" }, (err, role) => {
                   if (err) {
-                    // res.status(500).send({ message: err });
-                    message = err;
-                    return;
+                    message.push({ err: err });
                   }
 
                   user.roles = [role._id];
                   user.save((err) => {
                     if (err) {
-                      // res.status(500).send({ message: err });
-                      message = err;
-                      return;
+                      message.push({ err: err });
                     }
-                    // res.send({ message: "User was registered successfully!" });
-                    message = "User was registered successfully!";
+                    message.push({
+                      err: "User was registered successfully!",
+                    });
                   });
                 });
               }
             });
           }
         } else {
-          message = "User already exist";
-          // return res.send({ message: "User already exist", error: err });
+          message.push({
+            err: "User already exist",
+          });
         }
       }
     );
   });
-  await res.send({ message: message });
+  res.send({ message: message });
 };
 
 exports.signin = (req, res) => {
-  console.log("_____", req.body);
   User.findOne({
     username: req.body.username,
   })

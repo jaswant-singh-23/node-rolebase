@@ -6,7 +6,6 @@ const Leave = db.leave;
 
 exports.leaveDetails = (req, res) => {
   const username = req.headers["slug"];
-  console.log(username);
   Leave.find()
     .populate("roles", "-__v")
     .exec((err, user) => {
@@ -41,7 +40,6 @@ exports.leaveApply = (req, res) => {
     leaveStatus: req.body.leaveStatus,
     rejectReason: req.body.rejectReason,
   });
-  console.log("-------------", leaves);
   leaves.save((err, user) => {
     if (err) {
       res.status(500).send({ message: err });
@@ -67,7 +65,6 @@ exports.leaveReply = (req, res) => {
     leaveStatus: req.body.leaveStatus,
     rejectReason: req.body.rejectReason,
   });
-  console.log("-------------", leaves);
   leaves.update({ username: username }, (err, user) => {
     if (err) {
       res.status(500).send({ message: err });

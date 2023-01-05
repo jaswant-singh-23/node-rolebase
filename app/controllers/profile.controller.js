@@ -13,9 +13,8 @@ const { request } = require("http");
 const { response } = require("express");
 
 exports.profileDetails = (req, res) => {
-  console.log(req.headers["slug"]);
   User.find(
-    {},
+    { activeStatus: true },
     ($project = {
       panCard: 0,
       _id: 0,
@@ -44,8 +43,36 @@ exports.profileDetails = (req, res) => {
     });
 };
 
+////////////////////////////// General //////////////////////////
+
+exports.departmentAndEmployeeCount = (req, res) => {
+  User.aggregate([
+    { $match: { activeStatus: true } },
+    {
+      $group: {
+        _id: {
+          department: "$department",
+        },
+        totalCount: { $sum: 1 },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]).exec((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+    if (!user) {
+      return res.status(404).send({ message: "User Not found." });
+    }
+    res.status(200).send({
+      data: user,
+      message: "success",
+    });
+  });
+};
+
 exports.ProfileGetById = (req, res) => {
-  console.log(req.headers["slug"]);
   User.findOne(
     {
       username: req.headers["slug"],
@@ -94,7 +121,6 @@ exports.GetParticularProfile = (req, res) => {
   )
     .populate("roles", "-__v")
     .exec((err, user) => {
-      console.log(user);
       if (err) {
         res.status(500).send({ message: err });
         return;
@@ -110,8 +136,8 @@ exports.GetParticularProfile = (req, res) => {
       });
     });
 };
+
 exports.profileAdd = (req, res) => {
-  console.log("_____", req.body);
   const profile = new Profile({
     avatar: req.body.avatar,
     name: req.body.name,
@@ -177,21 +203,55 @@ exports.profileAdd = (req, res) => {
   });
 };
 
-exports.profileEdit = (req, res) => {
-  console.log("_____", req.body);
-  const profile = new Profile({
+exports.updateUserPassword = async (req, res) => {
+  User.findOne({
+    activeStatus: true,
     username: req.body.username,
-    email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8),
-  });
+  })
+    .populate("roles", "-__v")
+    .exec((err, user) => {
+      if (err) {
+        return res.status(500).send({ message: err });
+      }
 
-  Profile.findOne({
+      if (!user) {
+        return res.status(404).send({ message: "User Not found." });
+      }
+
+      var passwordIsValid = bcrypt.compareSync(req.body.oldPass, user.password);
+      let password = { password: bcrypt.hashSync(req.body.newPass.trim(), 8) };
+      
+      if (!passwordIsValid) {
+        return res.status(401).send({
+          accessToken: null,
+          message: "Invalid Password!",
+        });
+      }
+      User.updateOne(
+        { username: req.body.username },
+        password,
+        (err, result) => {
+          if (err) {
+            return res.status(500).send({ message: err });
+          }
+          res.status(200).send({
+            data: result,
+            message: "Password updated successfully",
+          });
+        }
+      );
+    });
+};
+
+exports.updateEmployeeDetails = async (req, res) => {
+  const username = req.body.username;
+  console.log(req.body)
+  const profileData = {
     avatar: req.body.avatar,
     name: req.body.name,
     username: req.body.username,
     email: req.body.email,
     phone: req.body.phone,
-    password: bcrypt.hashSync(req.body.password, 8),
     designation: req.body.designation,
     department: req.body.department,
     dateofjoining: req.body.dateofjoining,
@@ -201,36 +261,34 @@ exports.profileEdit = (req, res) => {
     address: req.body.address,
     dateofbirth: req.body.dateofbirth,
     bankDetail: req.body.bankDetail,
-  })
-    .populate("roles", "-__v")
-    .exec((err, user) => {
-      if (err) {
-        res.status(500).send({ message: err });
-        return;
-      }
-
-      if (!user) {
-        return res.status(404).send({ message: "User Not found." });
-      }
-
-      var token = jwt.sign({ id: user.id }, config.secret, {
-        expiresIn: 86400, // 24 hours
-      });
-
-      var authorities = [];
-
-      for (let i = 0; i < user.roles.length; i++) {
-        authorities.push("ROLE_" + user.roles[i].name.toUpperCase());
-      }
+  };
+  User.updateMany({ username: username }, profileData, (err, user) => {
+    if (err) {
+      return res.status(500).send({ message: err });
+    }
+    if (!user) {
+      return res.status(404).send({ message: "User Not found." });
+    } else {
       res.status(200).send({
-        message: "Profile update successfully!",
+        data: user,
+        message: "Profile updated successfully!",
       });
-    });
+    }
+  });
 };
 
 exports.avatarUpload = (req, res) => {
-  console.log(req.file.path, "================================");
-  res.send({ message: "Success", data: req.body });
+  let username = req.headers["slug"];
+  User.updateOne(
+    { username: username },
+    { avatar: req.file.path },
+    (err, result) => {
+      res.status(200).send({
+        data: result,
+        message: "Profile image uploaded successfully",
+      });
+    }
+  );
 };
 
 const upload = async (req, res) => {
@@ -286,86 +344,9 @@ exports.departmentDetails = (req, res) => {
           data.marketing.push(item);
         }
       });
-      console.log(data);
       res.send({ data: data, message: "Success!" });
     }
   );
-};
-
-// exports.updateEmployeeDetails = async (req, res) => {
-//   console.log(req.headers["slug"]);
-//   res.send({ data: req.body });
-// };
-exports.updateEmployeeDetails = async (req, res) => {
-  let slug = req.body.slug;
-  User.find({ username: slug }, (err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
-
-    if (!user) {
-      return res.status(404).send({ message: "User Not found." });
-    } else {
-      User.updateOne(
-        { username: username },
-        { activeStatus: false },
-        (err, result) => {
-          res.status(200).send({
-            data: result,
-            message: "User account deleted successfully",
-          });
-        }
-      );
-    }
-  });
-  // console.log(req.headers["slug"]);
-  // res.send({ data: req.body });
-  // User.findOne(
-  //   {
-  //     username: req.headers["slug"],
-  //   },
-  //   ($project = {
-  //     panCard: 0,
-  //     _id: 0,
-  //     aadharcard: 0,
-  //     currentCTC: 0,
-  //     bankDetail: 0,
-  //     __v: 0,
-  //     roles: 0,
-  //   })
-  // )
-  //   .populate("roles", "-__v")
-  //   .exec((err, user) => {
-  //     if (err) {
-  //       res.status(500).send({ message: err });
-  //       return;
-  //     }
-
-  //     if (!user) {
-  //       return res.status(404).send({ message: "User Not found." });
-  //     }
-
-  //     res.status(200).send({
-  //       data: user,
-  //       message: "success",
-  //     });
-  //   });
-};
-
-exports.deleteEmployeeAccount = async (req, res) => {
-  const username = req.body.id;
-
-  User.deleteOne({ username: username }, (err, user) => {
-    if (err) {
-      res.status(500).send({ err: "error", message: err });
-      return;
-    }
-    res.status(200).send({
-      data: user,
-      message: "Employee Data was delete successfully",
-    });
-  });
 };
 
 /////////////////////////// Inventory Control ////////////////////////////////
@@ -384,7 +365,7 @@ exports.inventoryAdd = async (req, res) => {
       return;
     }
     res.send({ message: "success", data: result });
-  })
+  });
 };
 exports.inventoryView = async (req, res) => {
   Inventory.find({}, (err, result) => {
@@ -393,23 +374,22 @@ exports.inventoryView = async (req, res) => {
       return;
     }
     res.send({ message: "success", data: result });
-  })
+  });
 };
 
 exports.inventoryGetById = async (req, res) => {
   const username = req.body.id;
-  console.log(username, req.headers)
   Inventory.find({ username: username }, (err, result) => {
     if (err) {
       res.status(500).send({ err: "error", message: err });
       return;
     }
     res.send({ message: "success", data: result });
-  })
+  });
 };
 
 exports.inventoryEdit = async (req, res) => {
-  const id =  req.body.id
+  const id = req.body.id;
   const inventory = {
     email: req.body.email,
     username: req.body.username,
@@ -422,7 +402,7 @@ exports.inventoryEdit = async (req, res) => {
       return;
     }
     res.send({ message: "success", data: result });
-  })
+  });
 };
 
 exports.inventoryDelete = async (req, res) => {
@@ -434,13 +414,12 @@ exports.inventoryDelete = async (req, res) => {
       return;
     }
     res.send({ message: "success", data: result });
-  })
+  });
 };
 
 ///////////////////////////////////////  Alumni /////////////////////////////////////
 
 exports.alumnidetails = (req, res) => {
-  console.log(req.headers["slug"]);
   User.find(
     { activeStatus: false },
     ($project = {
@@ -494,4 +473,38 @@ exports.addToAlumni = (req, res) => {
       );
     }
   });
+};
+
+exports.deleteEmployeeAccount = async (req, res) => {
+  const username = req.body.id;
+
+  User.deleteOne({ username: username }, (err, user) => {
+    if (err) {
+      res.status(500).send({ err: "error", message: err });
+      return;
+    }
+    res.status(200).send({
+      data: user,
+      message: "Employee Data was delete successfully",
+    });
+  });
+};
+
+exports.restoreEmployeeAccount = async (req, res) => {
+  const username = req.body.id;
+
+  User.updateOne(
+    { username: username },
+    { activeStatus: true },
+    (err, user) => {
+      if (err) {
+        res.status(500).send({ err: "error", message: err });
+        return;
+      }
+      res.status(200).send({
+        data: user,
+        message: "Employee Data was delete successfully",
+      });
+    }
+  );
 };

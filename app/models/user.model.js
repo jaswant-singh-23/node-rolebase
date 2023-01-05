@@ -34,7 +34,7 @@ const User = mongoose.model(
       required: true
     },
     dateofjoining: {
-      type: Date,
+      type: String,
     },
     currentCTC: {
       type: Number,
@@ -49,7 +49,7 @@ const User = mongoose.model(
       type: String,
     },
     dateofbirth: {
-      type: Date,
+      type: String,
     },
     bankDetail: {
       type: String,

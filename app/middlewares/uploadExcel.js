@@ -17,7 +17,6 @@ var storages = multer.diskStorage({
     cb(null, path.join(`${__dirname}/../public/excel`));
   },
   filename: (req, file, cb) => {
-    console.log(file.originalname);
     cb(null, `${Date.now()}-ameo-hrm-${file.originalname}`);
   },
 });
