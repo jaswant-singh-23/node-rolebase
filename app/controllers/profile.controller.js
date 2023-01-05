@@ -206,7 +206,7 @@ exports.profileAdd = (req, res) => {
 exports.updateUserPassword = async (req, res) => {
   User.findOne({
     activeStatus: true,
-    username: req.body.username,
+    username: req.body.data.username,
   })
     .populate("roles", "-__v")
     .exec((err, user) => {
@@ -218,8 +218,8 @@ exports.updateUserPassword = async (req, res) => {
         return res.status(404).send({ message: "User Not found." });
       }
 
-      var passwordIsValid = bcrypt.compareSync(req.body.oldPass, user.password);
-      let password = { password: bcrypt.hashSync(req.body.newPass.trim(), 8) };
+      var passwordIsValid = bcrypt.compareSync(req.body.data.oldPass, user.password);
+      let password = { password: bcrypt.hashSync(req.body.data.newPass.trim(), 8) };
       
       if (!passwordIsValid) {
         return res.status(401).send({
@@ -388,6 +388,7 @@ exports.inventoryGetById = async (req, res) => {
   });
 };
 
+
 exports.inventoryEdit = async (req, res) => {
   const id = req.body.id;
   const inventory = {
@@ -417,7 +418,7 @@ exports.inventoryDelete = async (req, res) => {
   });
 };
 
-///////////////////////////////////////  Alumni /////////////////////////////////////
+///////////////////////////////////////  Alumni  /////////////////////////////////////
 
 exports.alumnidetails = (req, res) => {
   User.find(
