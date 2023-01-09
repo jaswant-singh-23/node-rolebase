@@ -54,6 +54,12 @@ const User = mongoose.model(
     bankDetail: {
       type: String,
     },
+    totalPendingLeaves: {
+      type: Number,
+    },
+    leaveTaken: {
+      type: Number
+    },
     activeStatus: Boolean,
     roles: [
       {

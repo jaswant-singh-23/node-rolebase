@@ -44,6 +44,18 @@ module.exports = function (app) {
     controller.departmentDetails
   );
 
+  app.get(
+    "/api/department-names",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.departmentNames
+  );
+
+  app.post(
+    "/api/get-particular-department",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.getPariculardepartment
+  );
+
   app.post(
     "/api/get-particular-profile",
     [authJwt.verifyToken, authJwt.isModerator],

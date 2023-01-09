@@ -26,6 +26,8 @@ exports.signup = (req, res) => {
     dateofbirth: req.body.data.dateofbirth.trim(),
     bankDetail: req.body.data.bankDetail,
     activeStatus: true,
+    totalPendingLeaves: 12,
+    leaveTaken: 0
   });
 
   user.save((err, user) => {
@@ -108,6 +110,8 @@ exports.addUser = async (req, res) => {
             dateofbirth: item.dateofbirth,
             bankDetail: item.bankDetail,
             activeStatus: true,
+            totalPendingLeaves: 12,
+            leaveTaken: 0
           });
           if (!user) {
             message.push({ err: "User already exist or empty" });

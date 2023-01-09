@@ -220,7 +220,7 @@ exports.updateUserPassword = async (req, res) => {
 
       var passwordIsValid = bcrypt.compareSync(req.body.oldPass, user.password);
       let password = { password: bcrypt.hashSync(req.body.newPass.trim(), 8) };
-      
+
       if (!passwordIsValid) {
         return res.status(401).send({
           accessToken: null,
@@ -245,7 +245,7 @@ exports.updateUserPassword = async (req, res) => {
 
 exports.updateEmployeeDetails = async (req, res) => {
   const username = req.body.username;
-  console.log(req.body)
+  console.log(req.body);
   const profileData = {
     avatar: req.body.avatar,
     name: req.body.name,
@@ -262,7 +262,7 @@ exports.updateEmployeeDetails = async (req, res) => {
     dateofbirth: req.body.dateofbirth,
     bankDetail: req.body.bankDetail,
   };
-  User.updateMany({ username: username }, profileData, (err, user) => {
+  User.updateOne({ username: username }, profileData, (err, user) => {
     if (err) {
       return res.status(500).send({ message: err });
     }
@@ -345,6 +345,47 @@ exports.departmentDetails = (req, res) => {
         }
       });
       res.send({ data: data, message: "Success!" });
+    }
+  );
+};
+
+exports.departmentNames = (req, res) => {
+  User.aggregate([
+    {
+      $match: { activeStatus: true, department: { $ne: "Admin", $ne: "HRM" } },
+    },
+    {
+      $group: {
+        _id: {
+          department: "$department",
+        },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]).exec((err, user) => {
+    if (err) {
+      res.status(500).send({ err: "error", message: err });
+      return;
+    }
+    res.send({ data: user, message: "Success!" });
+  });
+};
+
+exports.getPariculardepartment = (req, res) => {
+  const department = req.body.department;
+  User.find(
+    {
+      department: { $ne: "Admin", $ne: "HRM" },
+      activeStatus: true,
+      department: department,
+    },
+    { department: 1, name: 1, avatar: 1, designation: 1, username: 1 },
+    (err, user) => {
+      if (err) {
+        res.status(500).send({ err: "error", message: err });
+        return;
+      }
+      res.send({ data: user, message: "Success!" });
     }
   );
 };
@@ -485,7 +526,7 @@ exports.deleteEmployeeAccount = async (req, res) => {
     }
     res.status(200).send({
       data: user,
-      message: "Employee Data was delete successfully",
+      message: "Employee account delete successfully",
     });
   });
 };
@@ -503,7 +544,7 @@ exports.restoreEmployeeAccount = async (req, res) => {
       }
       res.status(200).send({
         data: user,
-        message: "Employee Data was delete successfully",
+        message: "Employee account restore successfully",
       });
     }
   );
