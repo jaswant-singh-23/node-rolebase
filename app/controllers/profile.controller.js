@@ -429,6 +429,7 @@ exports.inventoryGetById = async (req, res) => {
   });
 };
 
+
 exports.inventoryEdit = async (req, res) => {
   const id = req.body.id;
   const inventory = {
@@ -458,7 +459,7 @@ exports.inventoryDelete = async (req, res) => {
   });
 };
 
-///////////////////////////////////////  Alumni /////////////////////////////////////
+///////////////////////////////////////  Alumni  /////////////////////////////////////
 
 exports.alumnidetails = (req, res) => {
   User.find(
