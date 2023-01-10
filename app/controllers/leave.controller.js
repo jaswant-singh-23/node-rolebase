@@ -84,7 +84,7 @@ exports.leaveNotifications = (req, res) => {
   const username = req.body.username;
   Leave.find(
     { username: username },
-    { username: 1, updatedAt: 1 },
+    { username: 1, updatedAt: 1, reason: 1 },
     (err, user) => {
       if (err) {
         res.status(500).send({ message: err });

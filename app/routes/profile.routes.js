@@ -121,4 +121,19 @@ module.exports = function (app) {
     [authJwt.verifyToken, authJwt.isModerator],
     controller.restoreEmployeeAccount
   );
+  app.get(
+    "/api/vacancy-details",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.vacancyDetails
+  );
+  app.post(
+    "/api/new-vacancy-hiring",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.newVacancy
+  );
+  app.post(
+    "/api/vacancy-delete",
+    [authJwt.verifyToken, authJwt.isModerator],
+    controller.vacancyDelete
+  );
 };

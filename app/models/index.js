@@ -10,7 +10,7 @@ db.role = require("./role.model");
 db.leave = require("./leave.model");
 db.profile = require("./profile.model");
 db.inventory = require("./inventory.model");
-db.single = require("./single.model");
+db.vacancy = require("./vacancy.model");
 
 db.ROLES = ["user", "admin", "moderator"];
 

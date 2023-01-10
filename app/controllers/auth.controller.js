@@ -27,7 +27,7 @@ exports.signup = (req, res) => {
     bankDetail: req.body.data.bankDetail,
     activeStatus: true,
     totalPendingLeaves: 12,
-    leaveTaken: 0
+    leaveTaken: 0,
   });
 
   user.save((err, user) => {
@@ -78,7 +78,6 @@ exports.signup = (req, res) => {
   });
 };
 
-
 exports.addUser = async (req, res) => {
   const reader = require("xlsx");
   const file = reader.readFile(req.file.destination + "/" + req.file.filename);
@@ -87,50 +86,68 @@ exports.addUser = async (req, res) => {
   let message = [];
   const temp = reader.utils.sheet_to_json(file.Sheets[file.SheetNames[0]]);
   data = temp;
-  data.map((item) => {
-    User.find(
-      { email: item.email, username: item.username },
-      function (err, obj) {
-        if ((item.address != " " && obj.length == 0) || obj.length == null) {
-          let password = item.password ? item.password.toString() : "123456";
-          const user = new User({
-            avatar: "",
-            name: item.name.trim(),
-            username: item.username.trim(),
-            email: item.email.trim(),
-            phone: item.phone,
-            password: bcrypt.hashSync(password.trim(), 8),
-            designation: item.designation.trim(),
-            department: item.department.trim(),
-            dateofjoining: item.dateofjoining,
-            currentCTC: item.currentCTC,
-            panCard: item.panCard,
-            aadharcard: item.aadharcard,
-            address: item.address,
-            dateofbirth: item.dateofbirth,
-            bankDetail: item.bankDetail,
-            activeStatus: true,
-            totalPendingLeaves: 12,
-            leaveTaken: 0
-          });
-          if (!user) {
-            message.push({ err: "User already exist or empty" });
-          } else {
-            user.save(function (err, user) {
-              if (err) {
-                message.push({ err: err });
-              }
-              if (item.roles) {
-                Role.find(
-                  {
-                    name: { $in: item.roles },
-                  },
-                  (err, roles) => {
+  if (data != null && data != undefined) {
+    data.map((item) => {
+      User.find(
+        { email: item.email, username: item.username },
+        function (err, obj) {
+          if ((item.address != " " && obj.length == 0) || obj.length == null) {
+            let password = item.password ? item.password.toString() : "123456";
+            const user = new User({
+              avatar: "",
+              name: item.name.trim(),
+              username: item.username.trim(),
+              email: item.email.trim(),
+              phone: item.phone,
+              password: bcrypt.hashSync(password.trim(), 8),
+              designation: item.designation.trim(),
+              department: item.department.trim(),
+              dateofjoining: item.dateofjoining,
+              currentCTC: item.currentCTC,
+              panCard: item.panCard,
+              aadharcard: item.aadharcard,
+              address: item.address,
+              dateofbirth: item.dateofbirth,
+              bankDetail: item.bankDetail,
+              activeStatus: true,
+              totalPendingLeaves: 12,
+              leaveTaken: 0,
+            });
+            if (!user) {
+              message.push({ err: "User already exist or empty" });
+            } else {
+              user.save(function (err, user) {
+                if (err) {
+                  message.push({ err: err });
+                }
+                if (item.roles) {
+                  Role.find(
+                    {
+                      name: { $in: item.roles },
+                    },
+                    (err, roles) => {
+                      if (err) {
+                        message.push({ err: err });
+                      }
+
+                      user.roles = roles.map((role) => role._id);
+                      user.save((err) => {
+                        if (err) {
+                          message.push({ err: err });
+                        }
+                        message.push({
+                          err: "User was registered successfully!",
+                        });
+                      });
+                    }
+                  );
+                } else {
+                  Role.findOne({ name: "user" }, (err, role) => {
                     if (err) {
                       message.push({ err: err });
                     }
 
-                    user.roles = roles.map((role) => role._id);
+                    user.roles = [role._id];
                     user.save((err) => {
                       if (err) {
                         message.push({ err: err });
@@ -139,36 +156,20 @@ exports.addUser = async (req, res) => {
                         err: "User was registered successfully!",
                       });
                     });
-                  }
-                );
-              } else {
-                Role.findOne({ name: "user" }, (err, role) => {
-                  if (err) {
-                    message.push({ err: err });
-                  }
-
-                  user.roles = [role._id];
-                  user.save((err) => {
-                    if (err) {
-                      message.push({ err: err });
-                    }
-                    message.push({
-                      err: "User was registered successfully!",
-                    });
                   });
-                });
-              }
+                }
+              });
+            }
+          } else {
+            message.push({
+              err: "User already exist",
             });
           }
-        } else {
-          message.push({
-            err: "User already exist",
-          });
         }
-      }
-    );
-  });
-  res.send({ message: message });
+      );
+    });
+    res.send({ message: message });
+  }
 };
 
 exports.signin = (req, res) => {

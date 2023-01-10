@@ -5,7 +5,7 @@ const fs = require("fs");
 const User = db.user;
 const Role = db.role;
 const Inventory = db.inventory;
-const Single = db.single;
+const Vacancy = db.vacancy;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
@@ -248,17 +248,17 @@ exports.updateEmployeeDetails = async (req, res) => {
   console.log(req.body);
   const profileData = {
     avatar: req.body.avatar,
-    name: req.body.name,
-    username: req.body.username,
-    email: req.body.email,
+    name: req.body.name.trim(),
+    username: req.body.username.trim(),
+    email: req.body.email.trim(),
     phone: req.body.phone,
-    designation: req.body.designation,
-    department: req.body.department,
+    designation: req.body.designation.trim(),
+    department: req.body.department.trim(),
     dateofjoining: req.body.dateofjoining,
     currentCTC: req.body.currentCTC,
     panCard: req.body.panCard,
     aadharcard: req.body.aadharcard,
-    address: req.body.address,
+    address: req.body.address.trim(),
     dateofbirth: req.body.dateofbirth,
     bankDetail: req.body.bankDetail,
   };
@@ -429,7 +429,6 @@ exports.inventoryGetById = async (req, res) => {
   });
 };
 
-
 exports.inventoryEdit = async (req, res) => {
   const id = req.body.id;
   const inventory = {
@@ -549,4 +548,65 @@ exports.restoreEmployeeAccount = async (req, res) => {
       });
     }
   );
+};
+
+///////////////////////////////////////  Vacancy & Hiring  /////////////////////////////////////
+
+exports.vacancyDetails = (req, res) => {
+  Vacancy.find({ positionActive: true }, (err, result) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+
+    if (!result) {
+      return res.status(404).send({ message: "Result Not found." });
+    }
+
+    res.status(200).send({
+      data: result,
+      message: "success",
+    });
+  });
+};
+exports.newVacancy = (req, res) => {
+  const vacancy = new Vacancy({
+    username: req.body.username,
+    position: req.body.position,
+    experience: req.body.experience,
+    totalVacancy: req.body.username,
+    description: req.body.username,
+    positionActive: true,
+  });
+
+  vacancy.save((err, result) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+
+    if (!result) {
+      return res.status(404).send({ message: "Result Not found." });
+    }
+
+    res.status(200).send({
+      data: result,
+      message: "success",
+    });
+  });
+};
+
+exports.vacancyDelete = async (req, res) => {
+  const id = req.body.id;
+
+  User.deleteOne({ id: id }, (err, result) => {
+    if (err) {
+      res.status(500).send({ err: "error", message: err });
+      return;
+    }
+    res.status(200).send({
+      data: result,
+      message: "Employee account delete successfully",
+    });
+  });
 };
