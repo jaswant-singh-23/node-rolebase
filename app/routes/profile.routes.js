@@ -129,7 +129,7 @@ module.exports = function (app) {
   app.post(
     "/api/new-vacancy-hiring",
     [authJwt.verifyToken, authJwt.isModerator],
-    controller.newVacancy
+    controller.addnewVacancy
   );
   app.post(
     "/api/vacancy-delete",

@@ -3,6 +3,7 @@ const db = require("../models");
 const fs = require("fs");
 
 const Leave = db.leave;
+const User = db.user;
 
 exports.leaveDetails = (req, res) => {
   const username = req.headers["slug"];
@@ -53,7 +54,7 @@ exports.leaveApply = (req, res) => {
   });
 };
 
-exports.leaveReply = (req, res) => {
+exports.leaveReply = async (req, res) => {
   let hrUsername = req.headers["slug"];
   const username = req.body.username;
   const department = req.body.department;
@@ -67,15 +68,25 @@ exports.leaveReply = (req, res) => {
   Leave.updateOne(
     { username: username, department: department },
     leavesData,
-    (err, user) => {
+    (err, result) => {
       if (err) {
         res.status(500).send({ message: err });
         return;
       }
-      res.status(200).send({
-        data: user,
-        message: "Success!",
-      });
+      if (result) {
+        if (req.body.rejectReason == '' && req.body.leaveStatus == 'Approved') {
+          User.updateOne({ username: username, department: department }, { $inc: { 'totalPendingLeaves': -1, 'leaveTaken': +1 } }, (error, response) => {
+            if (error) {
+              res.status(500).send({ message: error });
+              return;
+            }
+          })
+        }
+        res.status(200).send({
+          data: result,
+          message: "Success!",
+        });
+      }
     }
   );
 };

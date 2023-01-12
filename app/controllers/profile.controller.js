@@ -399,7 +399,6 @@ exports.inventoryAdd = async (req, res) => {
     totalItems: req.body.totalItems,
     itemName: req.body.itemName,
   });
-
   inventory.save((err, result) => {
     if (err) {
       res.status(500).send({ err: "error", message: err });
@@ -569,30 +568,21 @@ exports.vacancyDetails = (req, res) => {
     });
   });
 };
-exports.newVacancy = (req, res) => {
+exports.addnewVacancy = async (req, res) => {
+  const username = req.headers["slug"];
   const vacancy = new Vacancy({
-    username: req.body.username,
+    username: username,
     position: req.body.position,
     experience: req.body.experience,
-    totalVacancy: req.body.username,
-    description: req.body.username,
+    totalVacancy: req.body.totalVacancy,
     positionActive: true,
   });
-
   vacancy.save((err, result) => {
     if (err) {
-      res.status(500).send({ message: err });
+      res.status(500).send({ err: "error", message: err });
       return;
     }
-
-    if (!result) {
-      return res.status(404).send({ message: "Result Not found." });
-    }
-
-    res.status(200).send({
-      data: result,
-      message: "success",
-    });
+    res.send({ message: "success", data: result });
   });
 };
 
