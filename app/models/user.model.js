@@ -60,6 +60,9 @@ const User = mongoose.model(
     leaveTaken: {
       type: Number
     },
+    teamleader: {
+      type: Boolean
+    },
     activeStatus: Boolean,
     roles: [
       {

@@ -7,7 +7,7 @@ const User = db.user;
 
 exports.leaveDetails = (req, res) => {
   const username = req.headers["slug"];
-  Leave.find()
+  Leave.find({ isActive: true })
     .populate("roles", "-__v")
     .exec((err, user) => {
       if (err) {
@@ -36,6 +36,8 @@ exports.leaveApply = (req, res) => {
     fromDate: req.body.fromDate,
     toDate: req.body.toDate,
     department: req.body.department,
+    teamLeaderResponse: false,
+    isActive: true,
   });
   leaves.save((err, user) => {
     if (err) {
@@ -65,6 +67,14 @@ exports.leaveReply = async (req, res) => {
     rejectReason: req.body.rejectReason,
     hrUsername: hrUsername,
   };
+
+  const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+  const firstDate = new Date(req.body.toDate);
+  const secondDate = new Date(req.body.fromDate);
+
+  const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay));
+
+  console.log(diffDays);
   Leave.updateOne(
     { username: username, department: department },
     leavesData,
@@ -74,13 +84,20 @@ exports.leaveReply = async (req, res) => {
         return;
       }
       if (result) {
-        if (req.body.rejectReason == '' && req.body.leaveStatus == 'Approved') {
-          User.updateOne({ username: username, department: department }, { $inc: { 'totalPendingLeaves': -1, 'leaveTaken': +1 } }, (error, response) => {
-            if (error) {
-              res.status(500).send({ message: error });
-              return;
+        if (req.body.rejectReason == "" && req.body.leaveStatus == "Approved") {
+          User.updateOne(
+            { username: username, department: department },
+            {
+              isActive: false,
+              $inc: { totalPendingLeaves: -1, leaveTaken: +1 },
+            },
+            (error, response) => {
+              if (error) {
+                res.status(500).send({ message: error });
+                return;
+              }
             }
-          })
+          );
         }
         res.status(200).send({
           data: result,

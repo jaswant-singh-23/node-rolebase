@@ -18,6 +18,7 @@ const Leave = mongoose.model(
       hrUsername: String,
       isRead: Boolean,
       isActive: Boolean,
+      teamLeaderResponse: Boolean,
     },
     { timestamps: true }
   )

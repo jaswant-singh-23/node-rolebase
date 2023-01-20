@@ -26,6 +26,7 @@ exports.signup = (req, res) => {
     dateofbirth: req.body.data.dateofbirth.trim(),
     bankDetail: req.body.data.bankDetail,
     activeStatus: true,
+    teamleader: req.body.teamleader,
     totalPendingLeaves: 12,
     leaveTaken: 0,
   });
@@ -80,6 +81,7 @@ exports.signup = (req, res) => {
 
 exports.addUser = async (req, res) => {
   const reader = require("xlsx");
+  // const file = reader.readFile("app/public/excel/Book1.xlsx");
   const file = reader.readFile(req.file.destination + "/" + req.file.filename);
 
   let data = [];
@@ -110,6 +112,7 @@ exports.addUser = async (req, res) => {
               dateofbirth: item.dateofbirth,
               bankDetail: item.bankDetail,
               activeStatus: true,
+              teamleader: item.teamleader,
               totalPendingLeaves: 12,
               leaveTaken: 0,
             });
@@ -129,7 +132,7 @@ exports.addUser = async (req, res) => {
                       if (err) {
                         message.push({ err: err });
                       }
-
+                      console.log(user,"//////////////////////////////")
                       user.roles = roles.map((role) => role._id);
                       user.save((err) => {
                         if (err) {
