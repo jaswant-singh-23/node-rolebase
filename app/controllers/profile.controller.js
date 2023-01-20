@@ -436,7 +436,7 @@ exports.inventoryEdit = async (req, res) => {
     totalItems: req.body.totalItems,
     itemName: req.body.itemName,
   };
-  Inventory.updateMany({ username: id }, { $set: inventory }, (err, result) => {
+  Inventory.updateOne({ username: id }, { $set: inventory }, (err, result) => {
     if (err) {
       res.status(500).send({ err: "error", message: err });
       return;

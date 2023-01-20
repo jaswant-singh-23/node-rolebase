@@ -132,7 +132,7 @@ exports.addUser = async (req, res) => {
                       if (err) {
                         message.push({ err: err });
                       }
-                      console.log(user,"//////////////////////////////")
+                      console.log(user, "//////////////////////////////");
                       user.roles = roles.map((role) => role._id);
                       user.save((err) => {
                         if (err) {
@@ -178,6 +178,7 @@ exports.addUser = async (req, res) => {
 exports.signin = (req, res) => {
   User.findOne({
     username: req.body.username,
+    activeStatus: true,
   })
     .populate("roles", "-__v")
     .exec((err, user) => {
@@ -217,6 +218,8 @@ exports.signin = (req, res) => {
         username: user.username,
         email: user.email,
         name: user.name,
+        department: user.department,
+        teamleader: user.teamleader,
         roles: authorities,
         accessToken: token,
         message: "User was signin successfully!",

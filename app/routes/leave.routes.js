@@ -15,12 +15,22 @@ module.exports = function (app) {
     [authJwt.verifyToken, authJwt.isModerator],
     controller.leaveDetails
   );
+  app.get(
+    "/api/leave-details-for-team-lead",
+    [authJwt.verifyToken],
+    controller.LeaveDetailsForTeamLead
+  );
   app.post("/api/leave-apply", [authJwt.verifyToken], controller.leaveApply);
 
   app.post(
     "/api/leave-reply",
     [authJwt.verifyToken, authJwt.isModerator],
     controller.leaveReply
+  );
+  app.post(
+    "/api/leave-reply-by-teamleader",
+    [authJwt.verifyToken],
+    controller.leaveReplyByTeamLeader
   );
 
   app.post(

@@ -25,6 +25,27 @@ exports.leaveDetails = (req, res) => {
       });
     });
 };
+exports.LeaveDetailsForTeamLead = (req, res) => {
+  const username = req.headers["slug"];
+  const department = req.headers["department"];
+  Leave.find({ isActive: true })
+    .populate("roles", "-__v")
+    .exec((err, user) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+
+      if (!user) {
+        return res.status(404).send({ message: "User Not found." });
+      }
+
+      res.status(200).send({
+        data: user,
+        message: "success",
+      });
+    });
+};
 
 exports.leaveApply = (req, res) => {
   const username = req.headers["slug"];
@@ -57,6 +78,59 @@ exports.leaveApply = (req, res) => {
 };
 
 exports.leaveReply = async (req, res) => {
+  let hrUsername = req.headers["slug"];
+  const username = req.body.username;
+  const department = req.body.department;
+  const name = req.body.name;
+  const leavesData = {
+    department: req.body.department,
+    leaveStatus: req.body.leaveStatus,
+    rejectReason: req.body.rejectReason,
+    hrUsername: hrUsername,
+  };
+
+  const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+  const firstDate = new Date(req.body.toDate);
+  const secondDate = new Date(req.body.fromDate);
+
+  const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay));
+
+  console.log(diffDays);
+  Leave.updateOne(
+    { username: username, department: department },
+    leavesData,
+    (err, result) => {
+      if (err) {
+        res.status(500).send({ message: err });
+        return;
+      }
+      if (result) {
+        if (req.body.rejectReason == "" && req.body.leaveStatus == "Approved") {
+          User.updateOne(
+            { username: username, department: department },
+            {
+              isActive: false,
+              $inc: { totalPendingLeaves: -1, leaveTaken: +1 },
+            },
+            (error, response) => {
+              if (error) {
+                res.status(500).send({ message: error });
+                return;
+              }
+            }
+          );
+        }
+        res.status(200).send({
+          data: result,
+          message: "Success!",
+        });
+      }
+    }
+  );
+};
+
+
+exports.leaveReplyByTeamLeader = async (req, res) => {
   let hrUsername = req.headers["slug"];
   const username = req.body.username;
   const department = req.body.department;
