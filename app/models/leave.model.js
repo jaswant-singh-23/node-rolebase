@@ -19,6 +19,10 @@ const Leave = mongoose.model(
       isRead: Boolean,
       isActive: Boolean,
       teamLeaderResponse: Boolean,
+      leaderResponse: {
+        type: String,
+        default: "",
+      },
     },
     { timestamps: true }
   )

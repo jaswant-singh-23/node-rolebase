@@ -429,7 +429,7 @@ exports.inventoryGetById = async (req, res) => {
 };
 
 exports.inventoryEdit = async (req, res) => {
-  const id = req.body.id;
+  const id = req.body.username;
   const inventory = {
     email: req.body.email,
     username: req.body.username,
