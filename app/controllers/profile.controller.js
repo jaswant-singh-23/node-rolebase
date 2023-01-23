@@ -393,18 +393,39 @@ exports.getPariculardepartment = (req, res) => {
 /////////////////////////// Inventory Control ////////////////////////////////
 
 exports.inventoryAdd = async (req, res) => {
+  const email = req.body.email;
+  const username = req.body.username;
   const inventory = new Inventory({
     email: req.body.email,
     username: req.body.username,
     totalItems: req.body.totalItems,
     itemName: req.body.itemName,
   });
-  inventory.save((err, result) => {
-    if (err) {
-      res.status(500).send({ err: "error", message: err });
+  Inventory.find({ username: username, email: email }, (error, response) => {
+    if (error) {
+      res.status(500).send({ err: "error", message: error });
       return;
     }
-    res.send({ message: "success", data: result });
+    if (response) {
+      res
+        .status(400)
+        .send({
+          err: "error",
+          message: "Failed! Inventory user is already exist!",
+        });
+    }
+    if (response == null || response == "") {
+      inventory.save(
+        { $ne: { email: req.body.email, username: req.body.username } },
+        (err, result) => {
+          if (err) {
+            res.status(500).send({ err: "error", message: err });
+            return;
+          }
+          res.send({ message: "Success! Inventory added successfully|" });
+        }
+      );
+    }
   });
 };
 exports.inventoryView = async (req, res) => {

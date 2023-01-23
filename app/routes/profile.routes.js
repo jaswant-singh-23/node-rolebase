@@ -93,12 +93,20 @@ module.exports = function (app) {
   );
   app.post(
     "/api/inventory-add",
-    [authJwt.verifyToken, authJwt.isModerator],
+    [
+      authJwt.verifyToken,
+      verifySignUp.checkUsernameOrEmailExist,
+      authJwt.isModerator,
+    ],
     controller.inventoryAdd
   );
   app.post(
     "/api/inventory-edit",
-    [authJwt.verifyToken, authJwt.isModerator],
+    [
+      authJwt.verifyToken,
+      verifySignUp.checkUsernameOrEmailExist,
+      authJwt.isModerator,
+    ],
     controller.inventoryEdit
   );
   app.post(
