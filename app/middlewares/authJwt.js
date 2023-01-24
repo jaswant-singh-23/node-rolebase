@@ -6,17 +6,34 @@ const Role = db.role;
 
 verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
-
   if (!token) {
     return res.status(403).send({ message: "No token provided!" });
   }
 
   jwt.verify(token, config.secret, (err, decoded) => {
     if (err) {
-      return res.status(401).send({ message: "Unauthorized!" });
+      return res.status(401).send({ err: err, message: "Unauthorized!" });
     }
     req.userId = decoded.id;
+
     next();
+  });
+};
+
+tokenVerification = (req, res) => {
+  let token = req.headers["x-access-token"];
+  if (!token) {
+    return res.status(403).send({ message: "No token provided!" });
+  }
+
+  jwt.verify(token, config.secret, (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ err: err, message: "Unauthorized!" });
+    }
+
+    req.userId = decoded.id;
+
+    return res.status(200).send({ message: "success!" });
   });
 };
 
@@ -29,7 +46,7 @@ isAdmin = (req, res, next) => {
 
     Role.find(
       {
-        _id: { $in: user.roles }
+        _id: { $in: user.roles },
       },
       (err, roles) => {
         if (err) {
@@ -60,7 +77,7 @@ isModerator = (req, res, next) => {
 
     Role.find(
       {
-        _id: { $in: user.roles }
+        _id: { $in: user.roles },
       },
       (err, roles) => {
         if (err) {
@@ -84,7 +101,8 @@ isModerator = (req, res, next) => {
 
 const authJwt = {
   verifyToken,
+  tokenVerification,
   isAdmin,
-  isModerator
+  isModerator,
 };
 module.exports = authJwt;

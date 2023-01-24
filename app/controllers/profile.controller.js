@@ -137,19 +137,19 @@ exports.GetParticularProfile = (req, res) => {
     });
 };
 
-exports.getUpcomingBirthday = (req, res) => {
+exports.getUpcomingBirthday = async (req, res) => {
   const currentMonth = new Date().getMonth() + 1;
-  console.log(currentMonth)
+  const currentDay = new Date().getDate();
+
   User.aggregate([
     {
       $project: {
         _id: 0,
         name: "$name",
         designation: "$designation",
-        dateParts: { $dateToParts: { date: "$dateofbirth" } }
-      }
+        dateParts: { $dateToParts: { date: "$dateofbirth" } },
+      },
     },
-    // { $match: { '$birthMonth': currentMonth } },
     {
       $project: {
         name: "$name",
@@ -157,22 +157,42 @@ exports.getUpcomingBirthday = (req, res) => {
         birthMonth: "$dateParts.month",
         birthDay: "$dateParts.day",
       },
-
     },
-  ]).exec((err, user) => {
+  ]).exec((err, users) => {
     if (err) {
       res.status(500).send({ message: err });
       return;
     }
 
-    if (!user) {
+    if (!users) {
       return res.status(404).send({ message: "User Not found." });
     }
-
-    res.status(200).send({
-      data: user,
-      message: "success",
-    });
+    if (users) {
+      const todayBirthdays = [];
+      const upcomingBirthdays = [];
+      const previousBirthdays = [];
+      users.forEach((user) => {
+        if (user.birthMonth == currentMonth && currentDay == user.birthDay) {
+          todayBirthdays.push(user);
+        } else if (
+          user.birthMonth == currentMonth &&
+          user.birthDay >= currentDay
+        ) {
+          upcomingBirthdays.push({ user });
+        } else if (
+          user.birthMonth == currentMonth &&
+          user.birthDay < currentDay
+        ) {
+          previousBirthdays.push({ user });
+        }
+      });
+      res.status(200).send({
+        todayBirthdays: todayBirthdays,
+        upcomingBirthdays: upcomingBirthdays,
+        previousBirthdays: previousBirthdays,
+        message: "success",
+      });
+    }
   });
 };
 exports.profileAdd = (req, res) => {
@@ -445,12 +465,10 @@ exports.inventoryAdd = async (req, res) => {
       return;
     }
     if (response) {
-      res
-        .status(400)
-        .send({
-          err: "error",
-          message: "Failed! Inventory user is already exist!",
-        });
+      res.status(400).send({
+        err: "error",
+        message: "Failed! Inventory user is already exist!",
+      });
     }
     if (response == null || response == "") {
       inventory.save(
