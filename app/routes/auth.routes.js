@@ -25,5 +25,5 @@ module.exports = function (app) {
 
   app.post("/api/auth/signin", controller.signin);
 
-  app.post("/api/auth/verify-token", authJwt.tokenVerification);
+  app.get("/api/auth/verify-token", authJwt.tokenVerification);
 };
