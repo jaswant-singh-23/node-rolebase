@@ -137,6 +137,44 @@ exports.GetParticularProfile = (req, res) => {
     });
 };
 
+exports.getUpcomingBirthday = (req, res) => {
+  const currentMonth = new Date().getMonth() + 1;
+  console.log(currentMonth)
+  User.aggregate([
+    {
+      $project: {
+        _id: 0,
+        name: "$name",
+        designation: "$designation",
+        dateParts: { $dateToParts: { date: "$dateofbirth" } }
+      }
+    },
+    // { $match: { '$birthMonth': currentMonth } },
+    {
+      $project: {
+        name: "$name",
+        designation: "$designation",
+        birthMonth: "$dateParts.month",
+        birthDay: "$dateParts.day",
+      },
+
+    },
+  ]).exec((err, user) => {
+    if (err) {
+      res.status(500).send({ message: err });
+      return;
+    }
+
+    if (!user) {
+      return res.status(404).send({ message: "User Not found." });
+    }
+
+    res.status(200).send({
+      data: user,
+      message: "success",
+    });
+  });
+};
 exports.profileAdd = (req, res) => {
   const profile = new Profile({
     avatar: req.body.avatar,
