@@ -4,6 +4,12 @@ const dbConfig = require("./app/config/db.config");
 
 const app = express();
 
+const http = require('http');
+const server = http.createServer(app);
+
+const { Server } = require("socket.io");
+const io = new Server(server, { cors: { origin: "*" } });
+
 var corsOptions = {
   origin: "*",
 };
@@ -47,9 +53,6 @@ require("./app/routes/leave.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
-});
 
 function initial() {
   Role.estimatedDocumentCount((err, count) => {
@@ -94,3 +97,40 @@ function initial() {
     }
   });
 }
+
+let users = [];
+
+io.on('connection', (socket) => {
+  console.log(`⚡: ${socket.id} user just connected!`);
+  socket.on("message", data => {
+    io.emit("messageResponse", data);
+    console.log(";;;;",data)
+  })
+
+  socket.on("typing", data => (
+    socket.broadcast.emit("typingResponse", data)
+  ))
+
+  socket.on("newUser", data => {
+    users.push(data)
+    io.emit("newUserResponse", users)
+  })
+
+  socket.on('disconnect', () => {
+    console.log('🔥: A user disconnected');
+    users = users.filter(user => user.socketID !== socket.id)
+    io.emit("newUserResponse", users)
+    socket.disconnect()
+  });
+});
+
+/*app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
+});*/
+
+server.listen(PORT, () => {
+  console.log('listening on *:3000');
+});
+
+
+

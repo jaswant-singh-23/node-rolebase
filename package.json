@@ -29,6 +29,7 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nodemon": "^2.0.20",
     "react-validation": "^3.0.7",
+    "socket.io": "^4.5.4",
     "xlsx": "^0.18.5"
   }
 }
