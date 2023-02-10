@@ -11,6 +11,7 @@ db.leave = require("./leave.model");
 db.profile = require("./profile.model");
 db.inventory = require("./inventory.model");
 db.vacancy = require("./vacancy.model");
+db.attendance = require("./Attendance.model");
 
 db.ROLES = ["user", "admin", "moderator"];
 

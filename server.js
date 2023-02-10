@@ -98,31 +98,38 @@ function initial() {
   });
 }
 
-let users = [];
+function chat() {
+  let users = [];
+  var roomno = 1;
 
-io.on('connection', (socket) => {
-  console.log(`⚡: ${socket.id} user just connected!`);
-  socket.on("message", data => {
-    io.emit("messageResponse", data);
-    console.log(";;;;",data)
-  })
 
-  socket.on("typing", data => (
-    socket.broadcast.emit("typingResponse", data)
-  ))
+  io.on('connection', (socket) => {
+    socket.join("Ameo-" + roomno);
 
-  socket.on("newUser", data => {
-    users.push(data)
-    io.emit("newUserResponse", users)
-  })
+    socket.on("message", data => {
+      io.emit("messageResponse", data);
+    })
 
-  socket.on('disconnect', () => {
-    console.log('🔥: A user disconnected');
-    users = users.filter(user => user.socketID !== socket.id)
-    io.emit("newUserResponse", users)
-    socket.disconnect()
+    socket.on("typing", data => {
+      socket.broadcast.emit("typingResponse", data)
+    })
+
+    socket.on("newUser", data => {
+      users.push(data)
+      io.emit("newUserResponse", users)
+    })
+
+    socket.on('disconnect', () => {
+      console.log('🔥: A user disconnected');
+      users = users.filter(user => user.socketID !== socket.id)
+      io.emit("newUserResponse", users)
+      socket.disconnect()
+    });
   });
-});
+
+}
+
+chat();
 
 /*app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);

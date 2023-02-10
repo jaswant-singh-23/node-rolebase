@@ -6,6 +6,7 @@ const User = db.user;
 const Role = db.role;
 const Inventory = db.inventory;
 const Vacancy = db.vacancy;
+const Attendance = db.attendance;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
@@ -676,4 +677,27 @@ exports.vacancyDelete = async (req, res) => {
       message: "Employee account delete successfully",
     });
   });
+};
+
+
+/////////////////////////////// Attendance Management ////////////////////////
+
+
+exports.attendanceUpload = async (req, res) => {
+  const reader = require("xlsx");
+  const file = reader.readFile(req.file.destination + "/" + req.file.filename);
+  let data = [];
+  let message = [];
+  const temp = reader.utils.sheet_to_json(file.Sheets[file.SheetNames[0]]);
+  data = temp;
+
+  data.forEach((item, index) => {
+    // const username = item.Employee Name.split(' ').slice(0, -1).join(' ');
+    console.log(item,"//")
+    //   const attendance = new Attendance({
+    //     username:
+    //   })
+  })
+
+  res.send({ data: data });
 };

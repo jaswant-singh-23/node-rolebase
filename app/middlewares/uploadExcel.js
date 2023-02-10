@@ -14,12 +14,29 @@ const excelFilter = (req, file, cb) => {
 
 var storages = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(`${__dirname}/../public/excel`));
+    cb(null, path.join(`${__dirname}/../public/excel/users`));
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-ameo-hrm-${file.originalname}`);
   },
 });
 
-var uploadFile = multer({ storage: storages, fileFilter: excelFilter });
-module.exports = uploadFile;
+var upload = multer({ storage: storages, fileFilter: excelFilter });
+module.exports = upload;
+
+
+
+var datetime = new Date();
+var date = datetime.toISOString().slice(0,10);
+
+var storageAttendance = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(`${__dirname}/../public/excel/attendance`));
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${date}-${file.originalname}`);
+  },
+});
+
+var uploadAttendance = multer({ storage: storageAttendance, fileFilter: excelFilter });
+module.exports = uploadAttendance;

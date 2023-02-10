@@ -1,6 +1,7 @@
 const { verifySignUp, authJwt } = require("../middlewares");
 const controller = require("../controllers/profile.controller");
 const upload = require("../middlewares/upload");
+const uploadAttendance = require('../middlewares/uploadExcel')
 module.exports = function (app) {
   app.use(function (req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -150,4 +151,5 @@ module.exports = function (app) {
     [authJwt.verifyToken, authJwt.isModerator],
     controller.vacancyDelete
   );
+  app.post("/api/attendance-upload", [authJwt.verifyToken, authJwt.isModerator], uploadAttendance.single("file"), controller.attendanceUpload);
 };
