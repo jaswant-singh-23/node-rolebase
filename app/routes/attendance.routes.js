@@ -19,7 +19,7 @@ module.exports = function (app) {
   );
   app.get(
     "/api/attendance-of-all-user",
-    // [authJwt.verifyToken, authJwt.isModerator],
+    [authJwt.verifyToken, authJwt.isModerator],
     controller.attendanceAllUser
   );
   app.get(
