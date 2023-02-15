@@ -4,7 +4,7 @@ const dbConfig = require("./app/config/db.config");
 
 const app = express();
 
-const http = require('http');
+const http = require("http");
 const server = http.createServer(app);
 
 const { Server } = require("socket.io");
@@ -50,6 +50,9 @@ require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
 require("./app/routes/profile.routes")(app);
 require("./app/routes/leave.routes")(app);
+require("./app/routes/attendance.routes")(app);
+require("./app/routes/inventory.routes")(app);
+require("./app/routes/vacancy.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 4000;
@@ -102,31 +105,29 @@ function chat() {
   let users = [];
   var roomno = 1;
 
-
-  io.on('connection', (socket) => {
+  io.on("connection", (socket) => {
     socket.join("Ameo-" + roomno);
 
-    socket.on("message", data => {
+    socket.on("message", (data) => {
       io.emit("messageResponse", data);
-    })
+    });
 
-    socket.on("typing", data => {
-      socket.broadcast.emit("typingResponse", data)
-    })
+    socket.on("typing", (data) => {
+      socket.broadcast.emit("typingResponse", data);
+    });
 
-    socket.on("newUser", data => {
-      users.push(data)
-      io.emit("newUserResponse", users)
-    })
+    socket.on("newUser", (data) => {
+      users.push(data);
+      io.emit("newUserResponse", users);
+    });
 
-    socket.on('disconnect', () => {
-      console.log('🔥: A user disconnected');
-      users = users.filter(user => user.socketID !== socket.id)
-      io.emit("newUserResponse", users)
-      socket.disconnect()
+    socket.on("disconnect", () => {
+      console.log("🔥: A user disconnected");
+      users = users.filter((user) => user.socketID !== socket.id);
+      io.emit("newUserResponse", users);
+      socket.disconnect();
     });
   });
-
 }
 
 chat();
@@ -136,8 +137,5 @@ chat();
 });*/
 
 server.listen(PORT, () => {
-  console.log('listening on *:3000');
+  console.log("listening on *:3000");
 });
-
-
-

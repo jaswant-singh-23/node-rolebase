@@ -138,7 +138,6 @@ exports.leaveReplyByTeamLeader = async (req, res) => {
     teamLeaderResponse: req.body.teamLeaderResponse,
     leaderResponse: req.body.leaderResponse,
   };
-  console.log(leavesData);
   Leave.updateMany(
     { username: username, department: department },
     leavesData,

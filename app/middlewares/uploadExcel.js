@@ -1,4 +1,4 @@
-const multer = require('multer');
+const multer = require("multer");
 const path = require("path");
 
 const excelFilter = (req, file, cb) => {
@@ -24,10 +24,8 @@ var storages = multer.diskStorage({
 var upload = multer({ storage: storages, fileFilter: excelFilter });
 module.exports = upload;
 
-
-
 var datetime = new Date();
-var date = datetime.toISOString().slice(0,10);
+var date = datetime.toISOString().slice(0, 10);
 
 var storageAttendance = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -38,5 +36,8 @@ var storageAttendance = multer.diskStorage({
   },
 });
 
-var uploadAttendance = multer({ storage: storageAttendance, fileFilter: excelFilter });
+var uploadAttendance = multer({
+  storage: storageAttendance,
+  fileFilter: excelFilter,
+});
 module.exports = uploadAttendance;

@@ -1,7 +1,7 @@
 const { verifySignUp, authJwt } = require("../middlewares");
 const controller = require("../controllers/profile.controller");
 const upload = require("../middlewares/upload");
-const uploadAttendance = require('../middlewares/uploadExcel')
+const uploadAttendance = require("../middlewares/uploadExcel");
 module.exports = function (app) {
   app.use(function (req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -78,78 +78,10 @@ module.exports = function (app) {
     [authJwt.verifyToken, authJwt.isModerator],
     controller.deleteEmployeeAccount
   );*/
-  app.post(
-    "/api/delete-employee-account",
-    [authJwt.verifyToken, authJwt.isModerator],
-    controller.addToAlumni
-  );
+
   app.post(
     "/api/upload-user-avatar",
     [authJwt.verifyToken, upload.single("image")],
     controller.avatarUpload
   );
-  app.post(
-    "/api/inventory-view-by-id",
-    [authJwt.verifyToken, authJwt.isModerator],
-    controller.inventoryGetById
-  );
-  app.get(
-    "/api/inventory-view",
-    [authJwt.verifyToken, authJwt.isModerator],
-    controller.inventoryView
-  );
-  app.post(
-    "/api/inventory-add",
-    [
-      authJwt.verifyToken,
-      verifySignUp.checkUsernameOrEmailExist,
-      authJwt.isModerator,
-    ],
-    controller.inventoryAdd
-  );
-  app.post(
-    "/api/inventory-edit",
-    [
-      authJwt.verifyToken,
-      verifySignUp.checkUsernameOrEmailExist,
-      authJwt.isModerator,
-    ],
-    controller.inventoryEdit
-  );
-  app.post(
-    "/api/inventory-delete",
-    [authJwt.verifyToken, authJwt.isModerator],
-    controller.inventoryDelete
-  );
-  app.get(
-    "/api/alumni-view",
-    [authJwt.verifyToken, authJwt.isModerator],
-    controller.alumnidetails
-  );
-  app.post(
-    "/api/alumni-delete-employee-account",
-    [authJwt.verifyToken, authJwt.isModerator],
-    controller.deleteEmployeeAccount
-  );
-  app.post(
-    "/api/alumni-restore-employee-account",
-    [authJwt.verifyToken, authJwt.isModerator],
-    controller.restoreEmployeeAccount
-  );
-  app.get(
-    "/api/vacancy-details",
-    [authJwt.verifyToken, authJwt.isModerator],
-    controller.vacancyDetails
-  );
-  app.post(
-    "/api/new-vacancy-hiring",
-    [authJwt.verifyToken, authJwt.isModerator],
-    controller.addnewVacancy
-  );
-  app.post(
-    "/api/vacancy-delete",
-    [authJwt.verifyToken, authJwt.isModerator],
-    controller.vacancyDelete
-  );
-  app.post("/api/attendance-upload", [authJwt.verifyToken, authJwt.isModerator], uploadAttendance.single("file"), controller.attendanceUpload);
 };

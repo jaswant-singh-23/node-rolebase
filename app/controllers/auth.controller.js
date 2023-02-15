@@ -132,7 +132,6 @@ exports.addUser = async (req, res) => {
                       if (err) {
                         message.push({ err: err });
                       }
-                      console.log(user, "//////////////////////////////");
                       user.roles = roles.map((role) => role._id);
                       user.save((err) => {
                         if (err) {
