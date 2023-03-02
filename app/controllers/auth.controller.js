@@ -9,6 +9,11 @@ var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
 exports.signup = (req, res) => {
+  const slug = req.body.data.name.trim()
+    .toLowerCase()
+    .replace(/ /g, "_")
+    .replace(/[^\w-]+/, " ");
+
   const user = new User({
     avatar: req.body.data.avatar,
     name: req.body.data.name.trim(),
@@ -26,7 +31,8 @@ exports.signup = (req, res) => {
     dateofbirth: req.body.data.dateofbirth.trim(),
     bankDetail: req.body.data.bankDetail,
     activeStatus: true,
-    teamleader: req.body.teamleader,
+    teamleader: req.body.data.teamleader,
+    slug: slug,
     totalPendingLeaves: 12,
     leaveTaken: 0,
   });
@@ -95,6 +101,11 @@ exports.addUser = async (req, res) => {
         function (err, obj) {
           if ((item.address != " " && obj.length == 0) || obj.length == null) {
             let password = item.password ? item.password.toString() : "123456";
+            const slug = item.name.trim()
+              .toLowerCase()
+              .replace(/ /g, "_")
+              .replace(/[^\w-]+/, " ");
+
             const user = new User({
               avatar: "",
               name: item.name.trim(),
@@ -113,6 +124,7 @@ exports.addUser = async (req, res) => {
               bankDetail: item.bankDetail,
               activeStatus: true,
               teamleader: item.teamleader,
+              slug: slug,
               totalPendingLeaves: 12,
               leaveTaken: 0,
             });

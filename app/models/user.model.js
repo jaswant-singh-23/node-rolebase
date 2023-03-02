@@ -10,9 +10,15 @@ const User = mongoose.model(
       type: String,
       required: true,
     },
+    slug: {
+      type: String,
+      required: true,
+      unique: true
+    },
     username: {
       type: String,
       required: true,
+      unique: true
     },
     password: {
       type: String,
@@ -20,6 +26,7 @@ const User = mongoose.model(
     email: {
       type: String,
       required: true,
+      unique: true
     },
     phone: {
       type: Number,
@@ -70,7 +77,7 @@ const User = mongoose.model(
         ref: "Role",
       },
     ],
-  },{ timestamps: true })
+  }, { timestamps: true })
 );
 
 module.exports = User;

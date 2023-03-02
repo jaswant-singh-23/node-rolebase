@@ -10,7 +10,6 @@ module.exports = function (app) {
     res.setHeader("Access-Control-Allow-Credentials", true);
     next();
   });
-
   app.post(
     "/api/attendance-upload",
     [authJwt.verifyToken, authJwt.isModerator],

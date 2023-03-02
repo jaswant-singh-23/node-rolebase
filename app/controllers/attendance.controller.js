@@ -1,4 +1,5 @@
 const db = require("../models");
+const User = db.user;
 const Attendance = db.attendance;
 
 exports.attendanceUpload = async (req, res) => {
@@ -17,39 +18,48 @@ exports.attendanceUpload = async (req, res) => {
         rawAttendance.push({ date: key, status: value });
       }
     }
-    const userName = item["Employee Name"]
+    const slug = item["Employee Name"]
       .toLowerCase()
-      .replace(/ /g, "-")
-      .replace(/[^\w-]+/g, "");
-
-    AttendanceData.push({
-      name: item["Employee Name"],
-      username: userName,
-      designation: item["Designation"],
-      department: item["Department"],
-      attendance: JSON.stringify(rawAttendance),
-    });
-  });
-  Attendance.insertMany(AttendanceData, (err, result) => {
-    if (err) {
-      res.status(400).send({ err: "error", message: err });
-      return;
+      .replace(/ /g, "_")
+      .replace(/[^\w-]+/, " ");
+    if (rawAttendance != null && rawAttendance.length > 0) {
+      AttendanceData.push({
+        name: item["Employee Name"],
+        slug: slug,
+        designation: item["Designation"],
+        department: item["Department"],
+        attendance: JSON.stringify(rawAttendance),
+      });
     }
-    res.status(200).send({
-      data: result,
-      message: "Attendance uploaded successfully",
-    });
   });
+  if (AttendanceData != null && AttendanceData.length > 0) {
+    console.log("AttendanceData", AttendanceData)
+    Attendance.insertMany(AttendanceData, (err, result) => {
+      if (err) {
+        res.status(400).send({ err: "error", message: err });
+        return;
+      }
+      res.status(200).send({
+        data: result,
+        message: "Attendance uploaded successfully",
+      });
+    });
+  }
 };
-
 exports.attendanceAllUser = async (req, res) => {
-  Attendance.find({}, (err, result) => {
+  Attendance.find({ status: true }, (err, result) => {
     if (err) {
       res.status(400).send({ err: "error", message: err });
       return;
     }
+
+    const data = [];
+    result.forEach(async (item, index) => {
+      await data.push({ name: item.name, designation: item.designation, department: item.designation, attendance: JSON.parse(item.attendance) })
+    });
     res.status(200).send({
-      data: result,
+      // attendanceData:
+      data: data,
       message: "success",
     });
   });
@@ -62,9 +72,15 @@ exports.attendanceofParticularUser = async (req, res) => {
       res.status(400).send({ err: "error", message: err });
       return;
     }
-    res.status(200).send({
-      data: result,
-      message: "success",
-    });
+    // const data = [];
+    // result.forEach(async (item, index) => {
+    //   await data.push({ name: item.name, designation: item.designation, department: item.designation, attendance: JSON.parse(item.attendance) })
+    // });
+    if (result != null && result.length > 0) {
+      res.status(200).send({
+        data: result,
+        message: "success",
+      });
+    }
   });
 };

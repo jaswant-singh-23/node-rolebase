@@ -8,7 +8,7 @@ const Attendance = mongoose.model(
         type: String,
         required: true,
       },
-      username: {
+      slug: {
         type: String,
         required: true,
       },

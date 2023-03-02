@@ -53,6 +53,7 @@ require("./app/routes/leave.routes")(app);
 require("./app/routes/attendance.routes")(app);
 require("./app/routes/inventory.routes")(app);
 require("./app/routes/vacancy.routes")(app);
+require("./app/routes/alumani.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 4000;

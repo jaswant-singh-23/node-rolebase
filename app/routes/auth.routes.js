@@ -19,7 +19,7 @@ module.exports = function (app) {
     ],
     controller.signup
   );
-
+  
   app.post("/api/auth/add-new-user", upload.single("file"), controller.addUser);
   // app.get("/api/auth/add-new-user", controller.addUser);
 

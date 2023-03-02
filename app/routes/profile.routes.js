@@ -22,7 +22,7 @@ module.exports = function (app) {
     [authJwt.verifyToken],
     controller.getUpcomingBirthday
   );
-
+  
   app.get(
     "/api/all-profile-details",
     [authJwt.verifyToken, authJwt.isModerator],
