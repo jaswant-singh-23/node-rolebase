@@ -176,18 +176,29 @@ exports.getUpcomingBirthday = async (req, res) => {
           user.birthMonth == currentMonth &&
           user.birthDay >= currentDay
         ) {
-          upcomingBirthdays.push({ user });
+          upcomingBirthdays.push(user);
         } else if (
           user.birthMonth == currentMonth &&
           user.birthDay < currentDay
         ) {
-          previousBirthdays.push({ user });
+          previousBirthdays.push(user);
         }
       });
+
+      const todayBirthday = todayBirthdays.sort((a, b) =>
+        a.birthDay > b.birthDay ? 1 : -1
+      );
+      const upcomingBirthday = upcomingBirthdays.sort((a, b) =>
+        a.birthDay > b.birthDay ? 1 : -1
+      );
+      const previousBirthday = previousBirthdays.sort((a, b) =>
+        a.birthDay > b.birthDay ? 1 : -1
+      );
+
       res.status(200).send({
-        todayBirthdays: todayBirthdays,
-        upcomingBirthdays: upcomingBirthdays,
-        previousBirthdays: previousBirthdays,
+        todayBirthdays: todayBirthday,
+        upcomingBirthdays: upcomingBirthday,
+        previousBirthdays: previousBirthday,
         message: "success",
       });
     }
