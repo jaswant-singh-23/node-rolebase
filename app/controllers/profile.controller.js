@@ -445,5 +445,3 @@ exports.getPariculardepartment = (req, res) => {
     }
   );
 };
-
-

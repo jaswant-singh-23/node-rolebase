@@ -67,18 +67,19 @@ exports.attendanceAllUser = async (req, res) => {
 
 exports.attendanceofParticularUser = async (req, res) => {
   const username = req.headers["slug"];
-  Attendance.findOne({ username: username }, (err, result) => {
+  Attendance.findOne({ slug: username }, (err, result) => {
     if (err) {
       res.status(400).send({ err: "error", message: err });
       return;
     }
+    console.log(result, "result")
     // const data = [];
     // result.forEach(async (item, index) => {
     //   await data.push({ name: item.name, designation: item.designation, department: item.designation, attendance: JSON.parse(item.attendance) })
     // });
     if (result != null && result.length > 0) {
       res.status(200).send({
-        data: result,
+        // data: result,
         message: "success",
       });
     }

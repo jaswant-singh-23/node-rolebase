@@ -94,7 +94,7 @@ exports.leaveReply = async (req, res) => {
   const firstDate = new Date(req.body.toDate);
   const secondDate = new Date(req.body.fromDate);
 
-  const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay));
+  const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay)) + 1;
 
   Leave.updateOne(
     { username: username, department: department },
@@ -109,7 +109,6 @@ exports.leaveReply = async (req, res) => {
           User.updateOne(
             { username: username, department: department },
             {
-              isActive: false,
               $inc: { totalPendingLeaves: -diffDays, leaveTaken: +diffDays },
             },
             (error, response) => {

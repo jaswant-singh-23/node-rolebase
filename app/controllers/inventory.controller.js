@@ -2,6 +2,8 @@ const db = require("../models");
 const Inventory = db.inventory;
 
 exports.inventoryAdd = async (req, res) => {
+  let message = "";
+  let status = "";
   const email = req.body.email;
   const username = req.body.username;
   const inventory = new Inventory({
@@ -12,27 +14,35 @@ exports.inventoryAdd = async (req, res) => {
   });
   Inventory.find({ username: username, email: email }, (error, response) => {
     if (error) {
-      res.status(500).send({ err: "error", message: error });
-      return;
+      // res.status(500).send({ err: "error", message: error });
+      // return;
+      status = "failed";
+      message = error;
     }
     if (response) {
-      res.status(400).send({
-        err: "error",
-        message: "Failed! Inventory user is already exist!",
-      });
+      status = "failed";
+      message = "Failed! Inventory user is already exist!";
+      // res.status(400).send({
+      //   err: "error",
+      //   message: "Failed! Inventory user is already exist!",
+      // });
     }
     if (response == null || response == "") {
       inventory.save(
         { $ne: { email: req.body.email, username: req.body.username } },
         (err, result) => {
           if (err) {
-            res.status(500).send({ err: "error", message: err });
+            message = err;
+            status = "failed";
+            // res.status(500).send({ err: "error", message: err });
             return;
           }
-          res.send({ message: "Success! Inventory added successfully|" });
+          status = "success";
+          message = "Success! Inventory added successfully!";
         }
       );
     }
+    res.send({ message: message, status: status });
   });
 };
 
