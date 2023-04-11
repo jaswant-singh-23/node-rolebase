@@ -1,6 +1,7 @@
 const db = require("../models");
 const User = db.user;
 const Attendance = db.attendance;
+const moment = require("moment");
 
 exports.attendanceUpload = async (req, res) => {
   const reader = require("xlsx");
@@ -33,7 +34,7 @@ exports.attendanceUpload = async (req, res) => {
     }
   });
   if (AttendanceData != null && AttendanceData.length > 0) {
-    console.log("AttendanceData", AttendanceData)
+    console.log("AttendanceData", AttendanceData);
     Attendance.insertMany(AttendanceData, (err, result) => {
       if (err) {
         res.status(400).send({ err: "error", message: err });
@@ -55,7 +56,12 @@ exports.attendanceAllUser = async (req, res) => {
 
     const data = [];
     result.forEach(async (item, index) => {
-      await data.push({ name: item.name, designation: item.designation, department: item.designation, attendance: JSON.parse(item.attendance) })
+      await data.push({
+        name: item.name,
+        designation: item.designation,
+        department: item.designation,
+        attendance: JSON.parse(item.attendance),
+      });
     });
     res.status(200).send({
       // attendanceData:
@@ -66,22 +72,32 @@ exports.attendanceAllUser = async (req, res) => {
 };
 
 exports.attendanceofParticularUser = async (req, res) => {
-  const username = req.headers["slug"];
-  Attendance.findOne({ slug: username }, (err, result) => {
+  const slug = req.headers["name"]
+    .toLowerCase()
+    .replace(/ /g, "_")
+    .replace(/[^\w-]+/, " ");
+  Attendance.findOne({ slug: slug }, (err, result) => {
     if (err) {
-      res.status(400).send({ err: "error", message: err });
+      res.status(400).send({ err: err, message: "failed" });
       return;
     }
-    console.log(result, "result")
-    // const data = [];
-    // result.forEach(async (item, index) => {
-    //   await data.push({ name: item.name, designation: item.designation, department: item.designation, attendance: JSON.parse(item.attendance) })
-    // });
-    if (result != null && result.length > 0) {
-      res.status(200).send({
-        // data: result,
-        message: "success",
-      });
-    }
+    const data = {
+      attendance: JSON.parse(result.attendance),
+      name: result.name,
+      designation: result.designation,
+      department: result.department,
+    };
+    data.attendance.forEach(async (item, index) => {
+      data.attendance[index].date = moment(item.date).format("YYYY-MM-DD");
+      const status = item.status.toUpperCase();
+      data.attendance[index].status =
+        status == "P" ? "Present" : status == "A" ? "Absent" : "Leave";
+      // console.log("/////", moment(item.date).format("YYYY-MM-DD"), "/////");
+    });
+    console.log(data, "data");
+    res.status(200).send({
+      data: data,
+      message: "success",
+    });
   });
 };
